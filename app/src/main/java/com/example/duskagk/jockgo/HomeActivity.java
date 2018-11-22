@@ -38,14 +38,9 @@ public class HomeActivity extends AppCompatActivity
         ViewAdapter adt=new ViewAdapter(getSupportFragmentManager());
         adt.AddFragment(new Fragcloud(),"클라우드");
         adt.AddFragment(new Fraghome(),"홈");
-        adt.AddFragment(new Fragstudyline(),"sdf");
+        adt.AddFragment(new Fragstudyline(),"스터디라인");
         viewPager.setAdapter(adt);
         tabLayout.setupWithViewPager(viewPager);
-//        tabLayout.addTab(tabLayout.newTab().setText("클라우드"));
-//
-//        tabLayout.addTab(tabLayout.newTab().setText("홈"));
-//
-//        tabLayout.addTab(tabLayout.newTab().setText("스터디라인"));
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.ConsumerIrManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,9 +32,31 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.duskagk.jockgo.Retrofit.INodeJS;
+import com.example.duskagk.jockgo.Retrofit.RetrofitCl;
+
+import io.reactivex.Observable;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import retrofit2.Retrofit;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -40,6 +65,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    INodeJS myAPI;
+    CompositeDisposable compositeDisposable=new CompositeDisposable();
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -63,13 +90,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+
+    @Override
+    protected void onStop() {
+        compositeDisposable.clear();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Retrofit retrofit=RetrofitCl.getInstance();
+        myAPI=retrofit.create(INodeJS.class);
+
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -87,9 +133,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         Button signb=(Button)findViewById(R.id.subscribe);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
+            private static final String TAG ="text" ;
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                loginUser(mEmailView.getText().toString(),mPasswordView.getText().toString());
+//                try{
+//                    Log.i(TAG, mEmailView.getText().toString()+mPasswordView.getText().toString());
+//                    String res;
+//                    JSONTask task=new JSONTask();
+//                    res=task.execute(mEmailView.getText().toString(),mPasswordView.getText().toString()).get();
+//                    Log.i("리턴값",res);
+//                }catch (Exception e){
+//
+//                }
+//                attemptLogin();
             }
         });
         signb.setOnClickListener(new OnClickListener() {
@@ -103,6 +160,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
+
+    private void loginUser(String email, String pass) {
+//        compositeDisposable.add(myAPI.loginUser(email, pass)
+//                .subscribeOn(Scheduler.io())
+//                .observeOn()
+    }
+
+
+    public class JSONTask extends AsyncTask<String,Void,String>{
+        private static final String TAG ="transform error" ;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+    }
+
+
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {

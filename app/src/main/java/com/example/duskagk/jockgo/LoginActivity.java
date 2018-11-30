@@ -3,6 +3,7 @@ package com.example.duskagk.jockgo;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.ConsumerIrManager;
@@ -37,6 +38,9 @@ import android.widget.Toast;
 import com.example.duskagk.jockgo.Retrofit.INodeJS;
 import com.example.duskagk.jockgo.Retrofit.RetrofitCl;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.reactivex.Observable;
 
 import java.io.BufferedReader;
@@ -66,7 +70,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     INodeJS myAPI;
-    CompositeDisposable compositeDisposable=new CompositeDisposable();
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -90,26 +94,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    JSONObject val = new JSONObject();
 
-    @Override
-    protected void onStop() {
-        compositeDisposable.clear();
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        compositeDisposable.clear();
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Retrofit retrofit=RetrofitCl.getInstance();
-        myAPI=retrofit.create(INodeJS.class);
+
 
 
         // Set up the login form.
@@ -131,28 +124,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        Button signb=(Button)findViewById(R.id.subscribe);
+        Button signb = (Button) findViewById(R.id.subscribe);
+
+
+
+
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            private static final String TAG ="text" ;
+            private static final String TAG = "text";
+
             @Override
             public void onClick(View view) {
-                loginUser(mEmailView.getText().toString(),mPasswordView.getText().toString());
-//                try{
-//                    Log.i(TAG, mEmailView.getText().toString()+mPasswordView.getText().toString());
-//                    String res;
-//                    JSONTask task=new JSONTask();
-//                    res=task.execute(mEmailView.getText().toString(),mPasswordView.getText().toString()).get();
-//                    Log.i("리턴값",res);
-//                }catch (Exception e){
-//
-//                }
-//                attemptLogin();
+                Log.i(this.getClass().getName(), mEmailView.getText().toString());
+
+                try {
+                    val.put("id", mEmailView.getText().toString());
+                    val.put("pass", mPasswordView.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/login", val);
+                networkTask.execute();
+                attemptLogin();
             }
         });
         signb.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getApplicationContext(),signUP.class);
+                Intent intent = new Intent(getApplicationContext(), signUP.class);
                 startActivity(intent);
             }
         });
@@ -161,22 +160,47 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void loginUser(String email, String pass) {
-//        compositeDisposable.add(myAPI.loginUser(email, pass)
-//                .subscribeOn(Scheduler.io())
-//                .observeOn()
+    public class NetworkTask extends AsyncTask<Void, Void, String> {
+
+        private String url;
+        private JSONObject values;
+
+
+        public NetworkTask(String url, JSONObject values) {
+
+            this.url = url;
+            this.values = values;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            String result; // 요청 결과를 저장할 변수.
+            HttpProtocol requestHttpURLConnection = new HttpProtocol();
+            result = requestHttpURLConnection.request(url, values, "POST"); // 해당 URL로 부터 결과물을 얻어온다.
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
+            Log.i(this.getClass().getName(), s);
+        }
     }
 
 
-    public class JSONTask extends AsyncTask<String,Void,String>{
-        private static final String TAG ="transform error" ;
+
+    public class JSONTask extends AsyncTask<String, Void, String> {
+        private static final String TAG = "transform error";
 
         @Override
         protected String doInBackground(String... strings) {
             return null;
         }
     }
-
 
 
     private void populateAutoComplete() {
@@ -186,6 +210,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         getLoaderManager().initLoader(0, null, this);
     }
+
+
 
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {

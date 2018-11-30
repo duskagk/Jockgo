@@ -41,32 +41,36 @@ public class Fraghome extends Fragment {
         return view;
     }
     private void getImages(){
+
+
+
+
         mImages.add("http://image.yes24.com/momo/TopCate167/MidCate06/16659691.jpg");
         mNames.add("수학");
-
-        mImages.add("https://image.aladin.co.kr/product/2782/56/cover/8998756161_1.jpg");
-        mNames.add("c언어");
-
-        mImages.add("http://www.hanbit.co.kr/data/books/B8123297462_l.jpg");
-        mNames.add("c++");
-
-        mImages.add("http://www.hanbit.co.kr/data/books/B3450156021_l.jpg");
-        mNames.add("알고리즘");
-
-        mImages.add("http://www.hanbit.co.kr/data/books/B1779572378_l.jpg");
-        mNames.add("그래픽스");
-
-        mImages.add("http://userbook.net/wp/wp-content/uploads/2014/04/L-210x300.jpg");
-        mNames.add("사물인터넷");
-
-        mImages.add("http://image.kyobobook.co.kr/images/book/large/717/l9788973387717.jpg");
-        mNames.add("영상처리");
-
-        mImages.add("http://www.hanbit.co.kr/data/books/B4606522972_l.jpg");
-        mNames.add("기계학습");
-
-        mNames.add("http://bimage.interpark.com/goods_image/5/5/1/9/264105519g.jpg");
-        mNames.add("웹프로그래밍");
+//
+//        mImages.add("https://image.aladin.co.kr/product/2782/56/cover/8998756161_1.jpg");
+//        mNames.add("c언어");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B8123297462_l.jpg");
+//        mNames.add("c++");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B3450156021_l.jpg");
+//        mNames.add("알고리즘");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B1779572378_l.jpg");
+//        mNames.add("그래픽스");
+//
+//        mImages.add("http://userbook.net/wp/wp-content/uploads/2014/04/L-210x300.jpg");
+//        mNames.add("사물인터넷");
+//
+//        mImages.add("http://image.kyobobook.co.kr/images/book/large/717/l9788973387717.jpg");
+//        mNames.add("영상처리");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B4606522972_l.jpg");
+//        mNames.add("기계학습");
+//
+//        mNames.add("http://bimage.interpark.com/goods_image/5/5/1/9/264105519g.jpg");
+//        mNames.add("웹프로그래밍");
         initRecyclerView();
     }
 

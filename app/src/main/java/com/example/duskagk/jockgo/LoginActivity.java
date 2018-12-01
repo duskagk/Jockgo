@@ -126,16 +126,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         Button signb = (Button) findViewById(R.id.subscribe);
 
-
-
-
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             private static final String TAG = "text";
 
             @Override
             public void onClick(View view) {
-                Log.i(this.getClass().getName(), mEmailView.getText().toString());
-
                 try {
                     val.put("id", mEmailView.getText().toString());
                     val.put("pass", mPasswordView.getText().toString());
@@ -143,7 +138,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     e.printStackTrace();
                 }
 
-                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/login", val);
+                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/login", val, "POST");
                 networkTask.execute();
                 attemptLogin();
             }
@@ -159,38 +154,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-
-    public class NetworkTask extends AsyncTask<Void, Void, String> {
-
-        private String url;
-        private JSONObject values;
-
-
-        public NetworkTask(String url, JSONObject values) {
-
-            this.url = url;
-            this.values = values;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            String result; // 요청 결과를 저장할 변수.
-            HttpProtocol requestHttpURLConnection = new HttpProtocol();
-            result = requestHttpURLConnection.request(url, values, "POST"); // 해당 URL로 부터 결과물을 얻어온다.
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
-            Log.i(this.getClass().getName(), s);
-        }
-    }
-
 
 
     public class JSONTask extends AsyncTask<String, Void, String> {

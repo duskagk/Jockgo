@@ -1,12 +1,18 @@
 package com.example.duskagk.jockgo;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AlertDialogLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +45,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         return new ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called");
@@ -50,6 +57,24 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked an image:"+mNames.get(position));
+
+                AlertDialog.Builder mBulid=new AlertDialog.Builder(v.getContext());
+                LayoutInflater inf=(LayoutInflater)v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
+                View mv=inf.inflate(R.layout.subject_dialog,null);
+                EditText q_num=(EditText)mv.findViewById(R.id.q_cnt);
+                TextView sub_na=(TextView)mv.findViewById(R.id.subName);
+                sub_na.setText(mNames.get(position));
+                Button stbtn=(Button)mv.findViewById(R.id.mock_start);
+                stbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent=new Intent(v.getContext(),Mock_view.class);
+                        v.getContext().startActivity(intent);
+                    }
+                });
+                mBulid.setView(mv);
+                AlertDialog dialog=mBulid.create();
+                dialog.show();
                 Toast.makeText(mContext,mNames.get(position),Toast.LENGTH_SHORT).show();
             }
         });

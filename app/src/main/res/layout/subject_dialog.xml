@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:id="@+id/subName"
+    android:textSize="30dp"
+    android:text="과목명"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_below="@+id/subName"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/sub_unit"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="문제수"/>
+        <EditText
+            android:id="@+id/q_cnt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="문제개수"
+            android:layout_weight="2"/>
+            <Button
+                android:id="@+id/mock_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="진행"/>
+        </LinearLayout>
+    </LinearLayout>
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

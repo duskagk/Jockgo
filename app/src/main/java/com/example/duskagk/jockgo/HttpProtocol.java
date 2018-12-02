@@ -23,7 +23,6 @@ import javax.net.ssl.X509TrustManager;
 
 public class HttpProtocol {
     public String request(String _url, JSONObject _params, String method){
-
         // HttpURLConnection 참조 변수.
         HttpURLConnection urlConn = null;
         // URL 뒤에 붙여서 보낼 파라미터.
@@ -87,16 +86,19 @@ public class HttpProtocol {
             urlConn.setRequestMethod(method); // URL 요청에 대한 메소드 설정 : POST.
             //urlConn.setRequestProperty("Accept-Charset", "UTF-8"); // Accept-Charset 설정.
             //urlConn.setRequestProperty("Content-Type", "application/json;cahrset=UTF-8");
-            urlConn.setRequestProperty("Content-Type", "application/json");
             urlConn.setRequestProperty("Accept", "application/json");
+            if (method.equals("POST")) {
+                urlConn.setRequestProperty("Content-Type", "application/json");
 
 
-            // [2-2]. parameter 전달 및 데이터 읽어오기.
+
+                // [2-2]. parameter 전달 및 데이터 읽어오기.
 //            String strParams = sbParams.toString(); //sbParams에 정리한 파라미터들을 스트링으로 저장. 예)id=id1&pw=123;
-            OutputStream os = urlConn.getOutputStream();
-            os.write(_params.toString().getBytes()); // 출력 스트림에 출력.
-            os.flush(); // 출력 스트림을 플러시(비운다)하고 버퍼링 된 모든 출력 바이트를 강제 실행.
-            os.close(); // 출력 스트림을 닫고 모든 시스템 자원을 해제.
+                OutputStream os = urlConn.getOutputStream();
+                os.write(_params.toString().getBytes()); // 출력 스트림에 출력.
+                os.flush(); // 출력 스트림을 플러시(비운다)하고 버퍼링 된 모든 출력 바이트를 강제 실행.
+                os.close(); // 출력 스트림을 닫고 모든 시스템 자원을 해제.
+            }
 
             urlConn.connect();
 

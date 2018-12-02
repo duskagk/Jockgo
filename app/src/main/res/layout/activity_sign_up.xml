@@ -59,6 +59,7 @@ tools:context=".signUP">
                 android:layout_height="wrap_content"
                 android:text="ID"/>
             <EditText
+                android:id="@+id/id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
@@ -76,6 +77,7 @@ tools:context=".signUP">
                 android:layout_height="wrap_content"
                 android:text="닉네임"/>
             <EditText
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
@@ -129,6 +131,7 @@ tools:context=".signUP">
                 android:layout_height="wrap_content"
                 android:text="학교"/>
             <Spinner
+                android:id="@+id/school"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="60dp">

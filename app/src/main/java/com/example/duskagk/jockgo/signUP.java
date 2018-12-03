@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,7 +71,7 @@ public class signUP extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            if (mPass1.getText().toString().equals( mPass2.getText().toString() )) { //비밀번호 비빌번호 확인 검사
+            if (mPass1.getText().toString().equals( mPass2.getText().toString()) && mId.getText().length() > 5) { //비밀번호 비빌번호 확인 검사
                 JSONObject values = new JSONObject();
                 try {
                     values.put("id", mId.getText().toString());
@@ -81,9 +82,13 @@ public class signUP extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/register", values, "POST");
                 networkTask.execute();
+            }else {
+                if (mPass1.getText().toString().equals( mPass2.getText().toString()))
+                    Toast.makeText(signUP.this, "비밀번호를 다시 확인해 주세요", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(signUP.this, "아이디를 더 길게 해주세요.", Toast.LENGTH_SHORT).show();
             }
         }
     }

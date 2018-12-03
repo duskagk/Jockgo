@@ -22,14 +22,17 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
 
     private static final String TAG = "RecycleAdapter";
 
-    private ArrayList<String> mNames= new ArrayList<>();
-    private ArrayList<String> mImages= new ArrayList<>();
+    private ArrayList<String> mNames; //= new ArrayList<>();
+    private ArrayList<String> mImages; // = new ArrayList<>();
+    private ArrayList<ArrayList<String>> mAnswer; // = new ArrayList<ArrayList<String>>();
     private Context mContext;
 
-    public MockRecycle( Context mContext,ArrayList<String> mNames) {
+    public MockRecycle( Context mContext,ArrayList<String> mNames, ArrayList<ArrayList<String>> mAnswer) {
         this.mNames = mNames;
         this.mImages = mImages;
         this.mContext = mContext;
+        this.mAnswer = mAnswer;
+
     }
 
     @NonNull
@@ -47,6 +50,11 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
 //                .into(holder.image);
 
         holder.name.setText(mNames.get(position));
+        while (mAnswer.iterator().hasNext()){
+
+        }
+
+
 //        holder.image.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
@@ -25,9 +26,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -38,12 +44,13 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     private ArrayList<String> mNames= new ArrayList<>();
     private ArrayList<String> mImages= new ArrayList<>();
     private Context mContext;
+    private ArrayList<Integer> mTag;
 
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
-    List<String> listDataHeader;
-    private ArrayList<Integer> mTag;
-    HashMap<String, List<String>> listDataChild;
+    List<String> listDataHeader = new ArrayList<String>();;
+
+    HashMap<String, List<String>> listDataChild  = new HashMap<String, List<String>>();
 
 
     public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages, ArrayList<Integer> tag) {
@@ -76,7 +83,20 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked an image:" + mNames.get(position));
 
+                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/subject?b_no=" + mTag.get(position), null, "GET");
+                try {
+                    String result = networkTask.execute().get();
 
+                    JSONArray jsonArray = new JSONArray(result);
+                    prepareListData(jsonArray);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 AlertDialog.Builder mBulid = new AlertDialog.Builder(v.getContext());
                 LayoutInflater inf = (LayoutInflater) v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
@@ -84,7 +104,6 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                 EditText q_num = (EditText) mv.findViewById(R.id.q_cnt);
 
                 expListView = (ExpandableListView) mv.findViewById(R.id.lvExp);
-                prepareListData();
                 listAdapter = new ExListAdapter(v.getContext(), listDataHeader, listDataChild);
                 expListView.setAdapter(listAdapter);
 
@@ -145,8 +164,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                     }
                 });
                 mBulid.setView(mv);
-                AlertDialog dialog = mBulid.create();
-                dialog.show();
+                mBulid.create();
+                mBulid.show();
 //                Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
             }
         });
@@ -169,20 +188,41 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         }
     }
 
-    private void prepareListData() {
-        listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
+    private void prepareListData(JSONArray jsonArray) {
+        String tmpHead = "";
+        int index = -1;
+        List<String> child = null;
+        for(int i = 0; i< jsonArray.length(); i++){
+            try {
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                if (!(jsonObj.get("s_subject").toString().equals(tmpHead))){
+                    tmpHead = jsonObj.get("s_subject").toString();
+                    listDataHeader.add(tmpHead);
+                    child = new ArrayList<String>();
+                    if (index >= 0){
+                        listDataChild.put(listDataHeader.get(index), child);
+                    }
+                    index++;
+                }
+                child.add(jsonObj.get("s_denouement").toString());
 
-        for (int i = 0; i <= 10; i++) {
-            listDataHeader.add("Header" + i);
-
-            // Adding child data
-            List<String> child = new ArrayList<String>();
-            child.add("Child" + i);
-            child.add("Child" + i);
-
-            listDataChild.put(listDataHeader.get(i), child); // Header, Child data
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
         }
+        listDataChild.put(listDataHeader.get(index), child);
+//
+//        for (int i = 0; i <= 10; i++) {
+//            listDataHeader.add("Header" + i);
+//
+//            // Adding child data
+//            List<String> child = new ArrayList<String>();
+//            child.add("Child" + i);
+//            child.add("Child" + i);
+//
+//            listDataChild.put(listDataHeader.get(i), child); // Header, Child data
+//
+//        }
     }
 }

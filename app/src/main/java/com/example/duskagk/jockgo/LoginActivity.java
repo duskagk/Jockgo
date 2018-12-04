@@ -144,7 +144,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/login", val, "POST");
                 try {
                     String result = networkTask.execute().get();
-                    JSONObject jsonObject = new JSONArray(result).getJSONObject(0);
+                    JSONObject jsonObject = new JSONObject(result);
 
                     int no = jsonObject.getInt("u_no");
                     String name = jsonObject.getString("u_name");

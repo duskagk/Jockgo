@@ -33,6 +33,7 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        readUser();
 
         tabLayout = (TabLayout)findViewById(R.id.tabLayout);
         viewPager=(ViewPager)findViewById(R.id.viewP);

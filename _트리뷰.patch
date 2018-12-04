@@ -1,0 +1,530 @@
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/build.gradle	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -41,6 +41,6 @@
+     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+     implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+-
++    compile 'com.android.support:support-annotations:+'
+     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+ }
+Index: app/src/main/java/com/example/duskagk/jockgo/ExListAdapter.java
+===================================================================
+--- app/src/main/java/com/example/duskagk/jockgo/ExListAdapter.java	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
++++ app/src/main/java/com/example/duskagk/jockgo/ExListAdapter.java	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -0,0 +1,107 @@
++package com.example.duskagk.jockgo;
++
++import android.content.Context;
++import android.graphics.Typeface;
++import android.view.LayoutInflater;
++import android.view.View;
++import android.view.ViewGroup;
++import android.widget.BaseExpandableListAdapter;
++import android.widget.TextView;
++
++import java.util.HashMap;
++import java.util.List;
++
++public class ExListAdapter extends BaseExpandableListAdapter {
++    private Context _context;
++    private List<String> _listDataHeader; // header titles
++    // child data in format of header title, child title
++    private HashMap<String, List<String>> _listDataChild;
++
++    public ExListAdapter(Context context, List<String> listDataHeader,
++                         HashMap<String, List<String>> listChildData) {
++        this._context = context;
++        this._listDataHeader = listDataHeader;
++        this._listDataChild = listChildData;
++    }
++    @Override
++    public Object getChild(int groupPosition, int childPosititon) {
++        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
++                .get(childPosititon);
++    }
++
++    @Override
++    public long getChildId(int groupPosition, int childPosition) {
++        return childPosition;
++    }
++
++    @Override
++    public View getChildView(int groupPosition, final int childPosition,
++                             boolean isLastChild, View convertView, ViewGroup parent) {
++
++        final String childText = (String) getChild(groupPosition, childPosition);
++
++        if (convertView == null) {
++            LayoutInflater infalInflater = (LayoutInflater) this._context
++                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
++            convertView = infalInflater.inflate(R.layout.unit_item, null);
++        }
++
++        TextView txtListChild = (TextView) convertView
++                .findViewById(R.id.lblListItem);
++
++        txtListChild.setText(childText);
++        return convertView;
++    }
++
++    @Override
++    public int getChildrenCount(int groupPosition) {
++        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
++                .size();
++    }
++
++    @Override
++    public Object getGroup(int groupPosition) {
++        return this._listDataHeader.get(groupPosition);
++    }
++
++    @Override
++    public int getGroupCount() {
++        return this._listDataHeader.size();
++    }
++
++    @Override
++    public long getGroupId(int groupPosition) {
++        return groupPosition;
++    }
++
++    @Override
++    public View getGroupView(int groupPosition, boolean isExpanded,
++                             View convertView, ViewGroup parent) {
++        String headerTitle = (String) getGroup(groupPosition);
++        if (convertView == null) {
++            LayoutInflater infalInflater = (LayoutInflater) this._context
++                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
++            convertView = infalInflater.inflate(R.layout.unit_group, null);
++        }
++
++        TextView lblListHeader = (TextView) convertView
++                .findViewById(R.id.lblListHeader);
++        lblListHeader.setTypeface(null, Typeface.BOLD);
++        lblListHeader.setText(headerTitle);
++
++        return convertView;
++    }
++
++    @Override
++    public boolean hasStableIds() {
++        return false;
++    }
++
++    @Override
++    public boolean isChildSelectable(int groupPosition, int childPosition) {
++        return true;
++    }
++
++}
++
++
+Index: app/src/main/java/com/example/duskagk/jockgo/Fraghome.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/duskagk/jockgo/Fraghome.java	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/src/main/java/com/example/duskagk/jockgo/Fraghome.java	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -44,10 +44,6 @@
+             public void onClick(View v) {
+                 Intent intent=new Intent(getActivity(),LoginActivity.class);
+                 startActivity(intent);
+-//                AlertDialog.Builder mbul=new AlertDialog.Builder(getContext());
+-//                View mv=getLayoutInflater().inflate(R.layout.subject_dialog,null);
+-//                EditText ed=(EditText)mv.findViewById(R.id.q_cnt);
+-//                mbul.setView(mv);
+             }
+         });
+         return view;
+Index: app/src/main/java/com/example/duskagk/jockgo/Mock_view.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/duskagk/jockgo/Mock_view.java	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/src/main/java/com/example/duskagk/jockgo/Mock_view.java	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -12,7 +12,7 @@
+ 
+ public class Mock_view extends AppCompatActivity {
+     private ArrayList<String> mNames= new ArrayList<>();
+-    private ArrayList
++//    private ArrayList
+     private ArrayList<String> mImages= new ArrayList<>();
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+Index: app/src/main/java/com/example/duskagk/jockgo/RecycleAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/duskagk/jockgo/RecycleAdapter.java	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/src/main/java/com/example/duskagk/jockgo/RecycleAdapter.java	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -13,25 +13,37 @@
+ import android.view.ViewGroup;
+ import android.widget.Button;
+ import android.widget.EditText;
++import android.widget.ExpandableListAdapter;
++import android.widget.ExpandableListView;
++import android.widget.ExpandableListView.OnChildClickListener;
++import android.widget.ExpandableListView.OnGroupClickListener;
++import android.widget.ExpandableListView.OnGroupExpandListener;
++import android.widget.ExpandableListView.OnGroupCollapseListener;
+ import android.widget.ImageView;
+ import android.widget.TextView;
+ import android.widget.Toast;
+-
+ import com.bumptech.glide.Glide;
+ 
+ import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.List;
+ 
+ import de.hdodenhof.circleimageview.CircleImageView;
+ 
+-public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHolder>{
++public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHolder> {
+ 
+     private static final String TAG = "RecycleAdapter";
+-
+-    private ArrayList<String> mNames= new ArrayList<>();
+-    private ArrayList<String> mImages= new ArrayList<>();
++    private ArrayList<String> mNames = new ArrayList<>();
++    private ArrayList<String> mImages = new ArrayList<>();
+     private Context mContext;
+ 
+-    public RecycleAdapter( Context mContext,ArrayList<String> mNames, ArrayList<String> mImages) {
++    ExpandableListAdapter listAdapter;
++    ExpandableListView expListView;
++    List<String> listDataHeader;
++    HashMap<String, List<String>> listDataChild;
++
++
++    public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages) {
+         this.mNames = mNames;
+         this.mImages = mImages;
+         this.mContext = mContext;
+@@ -41,7 +53,7 @@
+     @Override
+     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+         Log.d(TAG, "onCreateViewHolder: called.");
+-        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.cardlist,parent,false);
++        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardlist, parent, false);
+         return new ViewHolder(view);
+     }
+ 
+@@ -51,31 +63,85 @@
+         Log.d(TAG, "onBindViewHolder: called");
+         Glide.with(mContext).asBitmap().load(mImages.get(position))
+                 .into(holder.image);
++//        LayoutInflater inf = null;
++//        final View mv=inf.inflate(R.layout.subject_dialog,null);
++
+ 
+         holder.name.setText(mNames.get(position));
+         holder.image.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+-                Log.d(TAG, "onClick: clicked an image:"+mNames.get(position));
++                Log.d(TAG, "onClick: clicked an image:" + mNames.get(position));
+ 
+-                AlertDialog.Builder mBulid=new AlertDialog.Builder(v.getContext());
+-                LayoutInflater inf=(LayoutInflater)v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
+-                View mv=inf.inflate(R.layout.subject_dialog,null);
+-                EditText q_num=(EditText)mv.findViewById(R.id.q_cnt);
+-                TextView sub_na=(TextView)mv.findViewById(R.id.subName);
++                AlertDialog.Builder mBulid = new AlertDialog.Builder(v.getContext());
++                LayoutInflater inf = (LayoutInflater) v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
++                final View mv = inf.inflate(R.layout.subject_dialog, null);
++                EditText q_num = (EditText) mv.findViewById(R.id.q_cnt);
++
++                expListView = (ExpandableListView) mv.findViewById(R.id.lvExp);
++                prepareListData();
++                listAdapter = new ExListAdapter(v.getContext(), listDataHeader, listDataChild);
++                expListView.setAdapter(listAdapter);
++
++
++
++                expListView.setOnGroupClickListener(new OnGroupClickListener() {
++                    @Override
++                    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
++                         Toast.makeText(v.getContext(),
++                         "Group Clicked " + listDataHeader.get(groupPosition),
++                         Toast.LENGTH_SHORT).show();
++                        return false;
++                    }
++                });
++                expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
++                    @Override
++                    public void onGroupExpand(int groupPosition) {
++                        Toast.makeText(mv.getContext(), listDataHeader.get(groupPosition)
++                                + "Exapand", Toast.LENGTH_SHORT).show();
++
++                    }
++                });
++
++                expListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
++
++                    @Override
++                    public void onGroupCollapse(int groupPosition) {
++                        Toast.makeText(mv.getContext(),
++                                listDataHeader.get(groupPosition) + " Collapsed",
++                                Toast.LENGTH_SHORT).show();
++
++                    }
++                });
++                expListView.setOnChildClickListener(new OnChildClickListener() {
++                    @Override
++                    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
++                        Toast.makeText(
++                                v.getContext(),
++                                listDataHeader.get(groupPosition)
++                                        + " : "
++                                        + listDataChild.get(
++                                        listDataHeader.get(groupPosition)).get(
++                                        childPosition), Toast.LENGTH_SHORT)
++                                .show();
++                        return false;
++                    }
++                });
++
++                TextView sub_na = (TextView) mv.findViewById(R.id.subName);
+                 sub_na.setText(mNames.get(position));
+-                Button stbtn=(Button)mv.findViewById(R.id.mock_start);
++                Button stbtn = (Button) mv.findViewById(R.id.mock_start);
+                 stbtn.setOnClickListener(new View.OnClickListener() {
+                     @Override
+                     public void onClick(View v) {
+-                        Intent intent=new Intent(v.getContext(),Mock_view.class);
++                        Intent intent = new Intent(v.getContext(), Mock_view.class);
+                         v.getContext().startActivity(intent);
+                     }
+                 });
+                 mBulid.setView(mv);
+-                AlertDialog dialog=mBulid.create();
++                AlertDialog dialog = mBulid.create();
+                 dialog.show();
+-                Toast.makeText(mContext,mNames.get(position),Toast.LENGTH_SHORT).show();
++//                Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
+             }
+         });
+     }
+@@ -85,15 +151,32 @@
+         return mImages.size();
+     }
+ 
+-    public class ViewHolder extends RecyclerView.ViewHolder{
++    public class ViewHolder extends RecyclerView.ViewHolder {
+         ImageView image;
+         TextView name;
+ 
+         public ViewHolder(View itemView) {
+             super(itemView);
+ 
+-            image=itemView.findViewById(R.id.image_view);
+-            name=itemView.findViewById(R.id.name);
++            image = itemView.findViewById(R.id.image_view);
++            name = itemView.findViewById(R.id.name);
+         }
+     }
+-}
++
++    private void prepareListData() {
++        listDataHeader = new ArrayList<String>();
++        listDataChild = new HashMap<String, List<String>>();
++
++        for (int i = 0; i <= 10; i++) {
++            listDataHeader.add("Header" + i);
++
++            // Adding child data
++            List<String> child = new ArrayList<String>();
++            child.add("Child" + i);
++            child.add("Child" + i);
++
++            listDataChild.put(listDataHeader.get(i), child); // Header, Child data
++
++        }
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/duskagk/jockgo/signUP.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/duskagk/jockgo/signUP.java	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/src/main/java/com/example/duskagk/jockgo/signUP.java	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -8,12 +8,15 @@
+ import android.widget.Button;
+ import android.widget.EditText;
+ import android.widget.Spinner;
++import android.widget.Toast;
+ 
+ import org.json.JSONArray;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+ 
+ import java.util.concurrent.ExecutionException;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
+ 
+ public class signUP extends AppCompatActivity {
+ 
+@@ -38,6 +41,16 @@
+ 
+         btnSign.setOnClickListener(new btnSignUpListener());
+     }
++    public static boolean checkEmail(String email){
++
++        String regex = "^[_a-zA-Z0-9-\\.]+@[\\.a-zA-Z0-9-]+\\.[a-zA-Z]+$";
++        Pattern p = Pattern.compile(regex);
++        Matcher m = p.matcher(email);
++        boolean isNormal = m.matches();
++        return isNormal;
++
++    }
++
+ 
+     public void getSchoolSpinner(){
+         NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/school", null, "GET");
+@@ -70,7 +83,7 @@
+         @Override
+         public void onClick(View v) {
+ 
+-            if (mPass1.getText().toString().equals( mPass2.getText().toString() )) { //비밀번호 비빌번호 확인 검사
++            if (mPass1.getText().toString().equals( mPass2.getText().toString() )&&checkEmail(mId.getText().toString())==true) { //비밀번호 비빌번호 확인 검사
+                 JSONObject values = new JSONObject();
+                 try {
+                     values.put("id", mId.getText().toString());
+@@ -81,9 +94,12 @@
+                     e.printStackTrace();
+                 }
+ 
+-
+                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/register", values, "POST");
+                 networkTask.execute();
++
++            }
++            else if(checkEmail(mId.getText().toString())==false){
++                Toast.makeText(getApplicationContext(),"이메일 형식이 아닙니다.",Toast.LENGTH_SHORT).show();
+             }
+         }
+     }
+Index: app/src/main/res/layout/cloud_f.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/cloud_f.xml	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/src/main/res/layout/cloud_f.xml	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -1,12 +1,13 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<android.support.constraint.ConstraintLayout
+-    xmlns:android="http://schemas.android.com/apk/res/android"
++<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+-    android:layout_height="match_parent">
++    android:layout_height="match_parent"
++    tools:layout_editor_absoluteY="81dp">
+ 
+     <TextView
++        android:id="@+id/textView2"
+         android:layout_width="wrap_content"
+         android:layout_height="17dp"
+         android:layout_marginStart="8dp"
+Index: app/src/main/res/layout/subject_dialog.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/subject_dialog.xml	(revision 53d3a1ef7468ef9a6c5e911c6f376643e3b0d9ec)
++++ app/src/main/res/layout/subject_dialog.xml	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -19,13 +19,13 @@
+         android:layout_below="@+id/subName"
+         android:orientation="vertical">
+ 
+-        <android.support.v7.widget.RecyclerView
+-            android:id="@+id/sub_unit"
++        <ExpandableListView
++            android:id="@+id/lvExp"
+             android:layout_weight="1"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content"
+-            android:orientation="vertical">
+-        </android.support.v7.widget.RecyclerView>
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:orientation="vertical">
++    </ExpandableListView>
+ 
+         <LinearLayout
+             android:layout_weight="1"
+Index: app/src/main/res/layout/unit_group.xml
+===================================================================
+--- app/src/main/res/layout/unit_group.xml	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
++++ app/src/main/res/layout/unit_group.xml	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -0,0 +1,21 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:orientation="horizontal" android:layout_width="wrap_content"
++    android:layout_height="wrap_content">
++
++    <CheckBox
++        android:id="@+id/lblListHeaderCheckbox"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_marginLeft="25dp"
++        android:gravity="right"
++        android:textColor="#ed0000"
++        android:textSize="17dp" />
++    <TextView
++        android:id="@+id/lblListHeader"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:textColor="#000000" />
++
++
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/res/layout/unit_item.xml
+===================================================================
+--- app/src/main/res/layout/unit_item.xml	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
++++ app/src/main/res/layout/unit_item.xml	(revision c479546958e7cc8f57b163dbf34ff7c3b956fab2)
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:orientation="vertical" android:layout_width="match_parent"
++    android:layout_height="match_parent">
++    <TextView
++        android:id="@+id/lblListItem"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:textSize="17dip"
++        android:paddingTop="5dp"
++        android:paddingBottom="5dp"
++        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
++        android:textColor="#336699"/>
++</LinearLayout>
++    <!--android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"-->
+diff --git .idea/caches/build_file_checksums.ser .idea/caches/build_file_checksums.ser
+index 39465b4aa73e5d5c61a272d8a0a839ef1d85548c..dc89eb7059c609dfb405f832358688bf2cc975ad
+GIT binary patch
+literal 537
+zc${1FmVvdnh`~NNKUXg?FQq6yGexf?KR>5fFEb@IQ7^qHF(oHeub?PDD>b=9F91S2
+zm1gFoxMk*~I%lLNXBU^|7Q2L-Ts|(GuF1r}<i#MFTj`TnT;dMa8(f)}9Fm!vT3nKt
+zTj0aMpIeEdv4nx&Co8cmQNOe#Ge_SyvB0{bfPsNAy?j~eN1(d|L2`N^IX#cW;tZfX
+zEBmd3hs6>uGBYr_F>vMNC#JY1CYR(Fc`|U8WE7<qXXNLkR20}dFn|D0IR}sw0AjWh
+z27$zaf|w+b)1lrfEn;Abc3SgU{0AFH$O9$@29VVZ0-21tf&uRy-YfUH?i%&=+X0{x
+zi&INVGV{`lVHyh=>KNESYUkZd*k^N}Jx@15Pb%E$@WK)X4QH#E(Bjmh;+T}u;_Sp2
+zsFoN+NEW0Pm1L$CBMiAB+jFy@VH3;C2F@98emK>YFz}!_6Rt3jJ?K-eVwk3=jaLz;
+zYt{~+pK|h(6LYYdYR{$lpw9j!^UT#RCCpTH-j*;3;&H?0UglMM5|;XHvQ0C7c2*#%
+F0syj8xsU(=
+

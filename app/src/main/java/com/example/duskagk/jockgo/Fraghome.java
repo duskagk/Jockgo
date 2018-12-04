@@ -30,6 +30,7 @@ public class Fraghome extends Fragment {
     View view;
     private ArrayList<String> mNames= new ArrayList<>();
     private ArrayList<String> mImages= new ArrayList<>();
+    private ArrayList<Integer> tag = new ArrayList<>();
     public Fraghome(){
 
     }
@@ -64,6 +65,7 @@ public class Fraghome extends Fragment {
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
                 mImages.add(url + jsonObj.get("b_image").toString() + ".jpg");
                 mNames.add(jsonObj.get("b_name").toString());
+                tag.add(Integer.parseInt(jsonObj.get("b_no").toString()));
             }
 
         } catch (InterruptedException e) {
@@ -110,7 +112,7 @@ public class Fraghome extends Fragment {
         LinearLayoutManager layoutManager=new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
         RecyclerView recyclerView=(RecyclerView)view.findViewById(R.id.rcview);
         recyclerView.setLayoutManager(layoutManager);
-        RecycleAdapter adapter=new RecycleAdapter(getContext(),mNames,mImages);
+        RecycleAdapter adapter=new RecycleAdapter(getContext(),mNames,mImages, tag);
         recyclerView.setAdapter(adapter);
     }
 }

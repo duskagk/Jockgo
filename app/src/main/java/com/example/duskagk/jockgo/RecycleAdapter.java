@@ -22,6 +22,7 @@ import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -30,11 +31,12 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHolder> {
+public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHolder>{
 
     private static final String TAG = "RecycleAdapter";
-    private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImages = new ArrayList<>();
+
+    private ArrayList<String> mNames= new ArrayList<>();
+    private ArrayList<String> mImages= new ArrayList<>();
     private Context mContext;
 
     ExpandableListAdapter listAdapter;
@@ -53,7 +55,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: called.");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardlist, parent, false);
+        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.cardlist,parent,false);
         return new ViewHolder(view);
     }
 
@@ -63,9 +65,6 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         Log.d(TAG, "onBindViewHolder: called");
         Glide.with(mContext).asBitmap().load(mImages.get(position))
                 .into(holder.image);
-//        LayoutInflater inf = null;
-//        final View mv=inf.inflate(R.layout.subject_dialog,null);
-
 
         holder.name.setText(mNames.get(position));
         holder.image.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +133,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                 stbtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(), Mock_view.class);
+                        Intent intent=new Intent(v.getContext(),Mock_view.class);
                         v.getContext().startActivity(intent);
                     }
                 });
@@ -151,15 +150,15 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         return mImages.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView image;
         TextView name;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            image = itemView.findViewById(R.id.image_view);
-            name = itemView.findViewById(R.id.name);
+            image=itemView.findViewById(R.id.image_view);
+            name=itemView.findViewById(R.id.name);
         }
     }
 

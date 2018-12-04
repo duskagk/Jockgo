@@ -94,6 +94,7 @@ public class signUP extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/register", values, "POST");
                 networkTask.execute();
 

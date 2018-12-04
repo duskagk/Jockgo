@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,14 +24,17 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
 
     private static final String TAG = "RecycleAdapter";
 
-    private ArrayList<String> mNames= new ArrayList<>();
-    private ArrayList<String> mImages= new ArrayList<>();
+    private ArrayList<String> mNames; //= new ArrayList<>();
+    private ArrayList<String> mImages; // = new ArrayList<>();
+    private ArrayList<ArrayList<String>> mAnswer; // = new ArrayList<ArrayList<String>>();
     private Context mContext;
 
-    public MockRecycle( Context mContext,ArrayList<String> mNames) {
+    public MockRecycle( Context mContext,ArrayList<String> mNames, ArrayList<ArrayList<String>> mAnswer) {
         this.mNames = mNames;
         this.mImages = mImages;
         this.mContext = mContext;
+        this.mAnswer = mAnswer;
+
     }
 
     @NonNull
@@ -47,6 +52,13 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
 //                .into(holder.image);
 
         holder.name.setText(mNames.get(position));
+
+        for (int i=1; mAnswer.size() > i; i++){
+            CheckBox checkBox = new CheckBox(mContext);
+            checkBox.setText(mAnswer.get(i).toString());
+        }
+
+
 //        holder.image.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -64,12 +76,13 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder{
 //        ImageView image;
         TextView name;
-
+        LinearLayout answer;
         public ViewHolder(View itemView) {
             super(itemView);
 
 //            image=itemView.findViewById(R.id.mock_img);
             name=itemView.findViewById(R.id.mock_q);
+            answer = itemView.findViewById(R.id.mock_answer);
         }
     }
 }

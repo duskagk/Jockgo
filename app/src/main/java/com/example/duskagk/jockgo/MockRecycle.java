@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,8 +52,10 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
 //                .into(holder.image);
 
         holder.name.setText(mNames.get(position));
-        while (mAnswer.iterator().hasNext()){
 
+        for (int i=1; mAnswer.size() > i; i++){
+            CheckBox checkBox = new CheckBox(mContext);
+            checkBox.setText(mAnswer.get(i).toString());
         }
 
 
@@ -72,12 +76,13 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder{
 //        ImageView image;
         TextView name;
-
+        LinearLayout answer;
         public ViewHolder(View itemView) {
             super(itemView);
 
 //            image=itemView.findViewById(R.id.mock_img);
             name=itemView.findViewById(R.id.mock_q);
+            answer = itemView.findViewById(R.id.mock_answer);
         }
     }
 }

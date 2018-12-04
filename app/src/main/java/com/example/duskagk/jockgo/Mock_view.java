@@ -20,15 +20,17 @@ public class Mock_view extends AppCompatActivity {
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<ArrayList<String>> mAnswer = new ArrayList<ArrayList<String>>();
     private ArrayList<String> mImages= new ArrayList<>();
+    private int mNo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mock_view);
+        mNo = getIntent().getIntExtra("no", 0);
         getImages();
     }
     private void getImages(){
 
-        NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/school", null, "GET");
+        NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem?s_no=" + 2 , null, "GET");
         try {
             String result = networkTask.execute().get();
 

@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -37,7 +38,10 @@ public class Fraghome extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        view= inflater.inflate(R.layout.home_f,container,false);
+
+//        MyApplication myApp = (MyApplication)getActivity().getApplication();
+
+        view = inflater.inflate(R.layout.home_f,container,false);
         getImages();
         Button login=view.findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +51,15 @@ public class Fraghome extends Fragment {
                 startActivity(intent);
             }
         });
+//        if (myApp.getLogin()) {
+//            TextView textView = (TextView) view.findViewById(R.id.test);
+//            textView.setText(myApp.getName());
+//        }
+
+
+        MyApplication myApp = (MyApplication)getActivity().getApplication();
+        TextView textView = (TextView)view.findViewById(R.id.test);
+        textView.setText(myApp.getName());
         return view;
     }
 

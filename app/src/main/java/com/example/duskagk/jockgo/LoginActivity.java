@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.ConsumerIrManager;
 import android.support.annotation.NonNull;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 import com.example.duskagk.jockgo.Retrofit.INodeJS;
 import com.example.duskagk.jockgo.Retrofit.RetrofitCl;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +55,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -123,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        final Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         Button signb = (Button) findViewById(R.id.subscribe);
 
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -139,7 +142,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
 
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/login", val, "POST");
-                networkTask.execute();
+                try {
+                    String result = networkTask.execute().get();
+                    JSONObject jsonObject = new JSONArray(result).getJSONObject(0);
+
+                    int no = jsonObject.getInt("u_no");
+                    String name = jsonObject.getString("u_name");
+                    String school = jsonObject.getString("u_school");
+
+                    MyApplication myApp = (MyApplication)getApplication();
+                    myApp.setSchool(school);
+                    myApp.setName(name);
+                    myApp.setNo(no);
+                    myApp.setLogin(true);
+
+                    SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putBoolean("login", true);
+                    editor.putInt("no", no);
+                    editor.putString("name", name);
+                    editor.putString("School", school);
+                    editor.commit();
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 attemptLogin();
             }
         });

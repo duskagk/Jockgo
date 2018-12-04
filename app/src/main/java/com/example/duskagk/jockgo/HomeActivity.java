@@ -1,5 +1,6 @@
 package com.example.duskagk.jockgo;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -51,6 +52,20 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void readUser() {
+        MyApplication myApp = (MyApplication)getApplication();
+        SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
+        pref.getString("hi", "");
+
+        if (pref.getBoolean("login", false)){
+            myApp.setLogin(true);
+            myApp.setNo(pref.getInt("no", -1));
+            myApp.setName(pref.getString("name", null));
+            myApp.setSchool(pref.getString("school", null));
+        }
+
     }
 
     @Override

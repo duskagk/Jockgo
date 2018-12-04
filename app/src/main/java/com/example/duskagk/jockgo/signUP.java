@@ -8,12 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class signUP extends AppCompatActivity {
 
@@ -38,6 +41,16 @@ public class signUP extends AppCompatActivity {
 
         btnSign.setOnClickListener(new btnSignUpListener());
     }
+    public static boolean checkEmail(String email){
+
+        String regex = "^[_a-zA-Z0-9-\\.]+@[\\.a-zA-Z0-9-]+\\.[a-zA-Z]+$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(email);
+        boolean isNormal = m.matches();
+        return isNormal;
+
+    }
+
 
     public void getSchoolSpinner(){
         NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/school", null, "GET");
@@ -70,7 +83,7 @@ public class signUP extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            if (mPass1.getText().toString().equals( mPass2.getText().toString() )) { //비밀번호 비빌번호 확인 검사
+            if (mPass1.getText().toString().equals( mPass2.getText().toString() )&&checkEmail(mId.getText().toString())==true) { //비밀번호 비빌번호 확인 검사
                 JSONObject values = new JSONObject();
                 try {
                     values.put("id", mId.getText().toString());
@@ -81,9 +94,12 @@ public class signUP extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/register", values, "POST");
                 networkTask.execute();
+
+            }
+            else if(checkEmail(mId.getText().toString())==false){
+                Toast.makeText(getApplicationContext(),"이메일 형식이 아닙니다.",Toast.LENGTH_SHORT).show();
             }
         }
     }

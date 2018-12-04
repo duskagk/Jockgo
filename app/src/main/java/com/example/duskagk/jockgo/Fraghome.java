@@ -44,10 +44,6 @@ public class Fraghome extends Fragment {
             public void onClick(View v) {
                 Intent intent=new Intent(getActivity(),LoginActivity.class);
                 startActivity(intent);
-//                AlertDialog.Builder mbul=new AlertDialog.Builder(getContext());
-//                View mv=getLayoutInflater().inflate(R.layout.subject_dialog,null);
-//                EditText ed=(EditText)mv.findViewById(R.id.q_cnt);
-//                mbul.setView(mv);
             }
         });
         return view;

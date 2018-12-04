@@ -12,7 +12,7 @@ import static android.content.ContentValues.TAG;
 
 public class Mock_view extends AppCompatActivity {
     private ArrayList<String> mNames= new ArrayList<>();
-    private ArrayList
+//    private ArrayList
     private ArrayList<String> mImages= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {

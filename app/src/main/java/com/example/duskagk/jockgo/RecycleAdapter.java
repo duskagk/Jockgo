@@ -42,13 +42,15 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader;
+    private ArrayList<Integer> mTag;
     HashMap<String, List<String>> listDataChild;
 
 
-    public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages) {
+    public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages, ArrayList<Integer> tag) {
         this.mNames = mNames;
         this.mImages = mImages;
         this.mContext = mContext;
+        this.mTag = tag;
     }
 
     @NonNull
@@ -66,11 +68,15 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         Glide.with(mContext).asBitmap().load(mImages.get(position))
                 .into(holder.image);
 
+
+        holder.name.setTag(mTag.get(position));
         holder.name.setText(mNames.get(position));
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked an image:" + mNames.get(position));
+
+
 
                 AlertDialog.Builder mBulid = new AlertDialog.Builder(v.getContext());
                 LayoutInflater inf = (LayoutInflater) v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
@@ -134,6 +140,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                     @Override
                     public void onClick(View v) {
                         Intent intent=new Intent(v.getContext(),Mock_view.class);
+                        intent.putExtra("no", mTag.get(position));
                         v.getContext().startActivity(intent);
                     }
                 });

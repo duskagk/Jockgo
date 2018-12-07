@@ -14,23 +14,26 @@
     android:text="과목명"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
+        android:layout_height="wrap_content"
+        android:id="@+id/exlay"
         android:layout_below="@+id/subName"
+        android:paddingEnd="20dp"
         android:orientation="vertical">
 
         <ExpandableListView
             android:id="@+id/lvExp"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
             android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-    </ExpandableListView>
+            android:orientation="vertical">
 
+        </ExpandableListView>
+    </LinearLayout>
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/exlay"
             android:gravity="bottom">
         <TextView
             android:layout_width="wrap_content"
@@ -38,6 +41,7 @@
             android:gravity="center"
             android:layout_weight="1"
             android:text="문제수"/>
+
         <EditText
             android:id="@+id/q_cnt"
             android:layout_width="wrap_content"
@@ -49,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="진행"/>
-        </LinearLayout>
     </LinearLayout>
+
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

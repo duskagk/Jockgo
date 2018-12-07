@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,24 +37,32 @@ public class Mock_view extends AppCompatActivity {
             String result = networkTask.execute().get();
 
             JSONArray jsonArray = new JSONArray(result);
-            for(int i = 0; i< jsonArray.length(); i++){
-                JSONObject jsonObj = jsonArray.getJSONObject(i);
-                mNames.add(jsonObj.get("p_problem").toString());
 
-                ArrayList<String> tmpAnswer = new ArrayList<String>();
-                if (jsonObj.get("a_answer").toString().length() > 0)
-                    tmpAnswer.add(jsonObj.get("a_answer").toString());
-                if (jsonObj.get("a_choice_1").toString().length() > 0)
-                    tmpAnswer.add(jsonObj.get("a_choice_1").toString());
-                if (jsonObj.get("a_choice_2").toString().length() > 0)
-                    tmpAnswer.add(jsonObj.get("a_choice_2").toString());
-                if (jsonObj.get("a_choice_3").toString().length() > 0)
-                    tmpAnswer.add(jsonObj.get("a_choice_3").toString());
-                if (jsonObj.get("a_choice_4").toString().length() > 0)
-                    tmpAnswer.add(jsonObj.get("a_choice_4").toString());
-                if (jsonObj.get("a_choice_5").toString().length() > 0)
-                    tmpAnswer.add(jsonObj.get("a_choice_5").toString());
-                mAnswer.add(tmpAnswer);
+
+            if (jsonArray.length() > 0) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObj = jsonArray.getJSONObject(i);
+                    mNames.add(jsonObj.get("p_problem").toString());
+
+                    ArrayList<String> tmpAnswer = new ArrayList<String>();
+                    if (jsonObj.get("a_answer").toString().length() > 0)
+                        tmpAnswer.add(jsonObj.get("a_answer").toString());
+                    if (jsonObj.get("a_choice_1").toString().length() > 0)
+                        tmpAnswer.add(jsonObj.get("a_choice_1").toString());
+                    if (jsonObj.get("a_choice_2").toString().length() > 0)
+                        tmpAnswer.add(jsonObj.get("a_choice_2").toString());
+                    if (jsonObj.get("a_choice_3").toString().length() > 0)
+                        tmpAnswer.add(jsonObj.get("a_choice_3").toString());
+                    if (jsonObj.get("a_choice_4").toString().length() > 0)
+                        tmpAnswer.add(jsonObj.get("a_choice_4").toString());
+                    if (jsonObj.get("a_choice_5").toString().length() > 0)
+                        tmpAnswer.add(jsonObj.get("a_choice_5").toString());
+                    mAnswer.add(tmpAnswer);
+
+                    initRecyclerView();
+                }
+            } else {
+                onBackPressed();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -101,7 +110,7 @@ public class Mock_view extends AppCompatActivity {
 //                "                \"정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.");
 
 
-        initRecyclerView();
+
     }
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView:  initrecyclerview");

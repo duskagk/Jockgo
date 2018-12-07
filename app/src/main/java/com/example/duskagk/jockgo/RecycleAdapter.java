@@ -48,9 +48,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
 
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
-    List<String> listDataHeader = new ArrayList<String>();;
-
-    HashMap<String, List<String>> listDataChild  = new HashMap<String, List<String>>();
+    List<String> listDataHeader;
+    HashMap<String, List<String>> listDataChild;
 
 
     public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages, ArrayList<Integer> tag) {
@@ -88,7 +87,81 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                     String result = networkTask.execute().get();
 
                     JSONArray jsonArray = new JSONArray(result);
-                    prepareListData(jsonArray);
+                    if (jsonArray.length() > 0) {
+                        prepareListData(jsonArray);
+
+                        AlertDialog.Builder mBulid = new AlertDialog.Builder(v.getContext());
+                        LayoutInflater inf = (LayoutInflater) v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
+                        final View mv = inf.inflate(R.layout.subject_dialog, null);
+                        EditText q_num = (EditText) mv.findViewById(R.id.q_cnt);
+
+                        expListView = (ExpandableListView) mv.findViewById(R.id.lvExp);
+                        listAdapter = new ExListAdapter(v.getContext(), listDataHeader, listDataChild);
+                        expListView.setAdapter(listAdapter);
+
+
+
+                        expListView.setOnGroupClickListener(new OnGroupClickListener() {
+                            @Override
+                            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                                Toast.makeText(v.getContext(),
+                                        "Group Clicked " + listDataHeader.get(groupPosition),
+                                        Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+                        });
+                        expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
+                            @Override
+                            public void onGroupExpand(int groupPosition) {
+                                Toast.makeText(mv.getContext(), listDataHeader.get(groupPosition)
+                                        + "Exapand", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
+                        expListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
+
+                            @Override
+                            public void onGroupCollapse(int groupPosition) {
+                                Toast.makeText(mv.getContext(),
+                                        listDataHeader.get(groupPosition) + " Collapsed",
+                                        Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                        expListView.setOnChildClickListener(new OnChildClickListener() {
+                            @Override
+                            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                                Toast.makeText(
+                                        v.getContext(),
+                                        listDataHeader.get(groupPosition)
+                                                + " : "
+                                                + listDataChild.get(
+                                                listDataHeader.get(groupPosition)).get(
+                                                childPosition), Toast.LENGTH_SHORT)
+                                        .show();
+                                return false;
+                            }
+                        });
+
+                        TextView sub_na = (TextView) mv.findViewById(R.id.subName);
+                        sub_na.setText(mNames.get(position));
+                        Button stbtn = (Button) mv.findViewById(R.id.mock_start);
+                        stbtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent=new Intent(v.getContext(),Mock_view.class);
+                                intent.putExtra("no", mTag.get(position));
+                                v.getContext().startActivity(intent);
+                            }
+                        });
+                        mBulid.setView(mv);
+                        mBulid.create();
+                        mBulid.show();
+//                Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mContext, "정상적으로 등록되지 않은 책입니다.", Toast.LENGTH_SHORT).show();
+                    }
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -98,75 +171,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                     e.printStackTrace();
                 }
 
-                AlertDialog.Builder mBulid = new AlertDialog.Builder(v.getContext());
-                LayoutInflater inf = (LayoutInflater) v.getContext().getSystemService(v.getContext().LAYOUT_INFLATER_SERVICE);
-                final View mv = inf.inflate(R.layout.subject_dialog, null);
-                EditText q_num = (EditText) mv.findViewById(R.id.q_cnt);
 
-                expListView = (ExpandableListView) mv.findViewById(R.id.lvExp);
-                listAdapter = new ExListAdapter(v.getContext(), listDataHeader, listDataChild);
-                expListView.setAdapter(listAdapter);
-
-
-
-                expListView.setOnGroupClickListener(new OnGroupClickListener() {
-                    @Override
-                    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                         Toast.makeText(v.getContext(),
-                         "Group Clicked " + listDataHeader.get(groupPosition),
-                         Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                });
-                expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-                    @Override
-                    public void onGroupExpand(int groupPosition) {
-                        Toast.makeText(mv.getContext(), listDataHeader.get(groupPosition)
-                                + "Exapand", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-                expListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
-
-                    @Override
-                    public void onGroupCollapse(int groupPosition) {
-                        Toast.makeText(mv.getContext(),
-                                listDataHeader.get(groupPosition) + " Collapsed",
-                                Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-                expListView.setOnChildClickListener(new OnChildClickListener() {
-                    @Override
-                    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                        Toast.makeText(
-                                v.getContext(),
-                                listDataHeader.get(groupPosition)
-                                        + " : "
-                                        + listDataChild.get(
-                                        listDataHeader.get(groupPosition)).get(
-                                        childPosition), Toast.LENGTH_SHORT)
-                                .show();
-                        return false;
-                    }
-                });
-
-                TextView sub_na = (TextView) mv.findViewById(R.id.subName);
-                sub_na.setText(mNames.get(position));
-                Button stbtn = (Button) mv.findViewById(R.id.mock_start);
-                stbtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent=new Intent(v.getContext(),Mock_view.class);
-                        intent.putExtra("no", mTag.get(position));
-                        v.getContext().startActivity(intent);
-                    }
-                });
-                mBulid.setView(mv);
-                mBulid.create();
-                mBulid.show();
-//                Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -192,6 +197,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         String tmpHead = "";
         int index = -1;
         List<String> child = null;
+        listDataHeader = new ArrayList<String>();
+        listDataChild  = new HashMap<String, List<String>>();
         for(int i = 0; i< jsonArray.length(); i++){
             try {
                 JSONObject jsonObj = jsonArray.getJSONObject(i);

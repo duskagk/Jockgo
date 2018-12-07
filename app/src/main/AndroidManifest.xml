@@ -11,7 +11,6 @@
 
     <application
         android:name=".MyApplication"
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,7 +33,10 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
         <activity android:name=".signUP" />
-        <activity android:name=".Mock_view"></activity>
+        <activity android:name=".Mock_view" />
+        <activity android:name=".add_subject" />
+        <activity android:name=".add_exam" />
+        <activity android:name=".add_category"></activity>
     </application>
 
 </manifest>

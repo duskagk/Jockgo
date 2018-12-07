@@ -1,5 +1,6 @@
 package com.example.duskagk.jockgo;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -107,10 +108,9 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_regist) {
-
+        if (id == R.id.nav_regist) {
+            Intent intent=new Intent(HomeActivity.this,add_exam.class);
+            startActivity(intent);
         } else if (id == R.id.nav_send) {
 
         }

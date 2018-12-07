@@ -59,9 +59,9 @@ public class signUP extends AppCompatActivity {
 
 
 
-            JSONArray jsonArray = new JSONArray(result);
+//            list jsonArray = dbh.getmo();
             ArrayAdapter<String> adapter = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_dropdown_item);
-
+            JSONArray jsonArray=new JSONArray(result);
             for(int i = 0; i< jsonArray.length(); i++){
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
                 adapter.add(jsonObj.get("u_school").toString());

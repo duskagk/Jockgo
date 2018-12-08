@@ -1,5 +1,7 @@
 package com.example.duskagk.jockgo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,7 +21,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,6 +39,10 @@ public class HomeActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private AppBarLayout appbar;
+
+    List<String> li;
+    InputMethodManager imm;
+    String[] lli=new String[]{"C언어","웹프로그래밍","수학"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +119,7 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -109,8 +127,54 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_regist) {
-            Intent intent=new Intent(HomeActivity.this,add_exam.class);
-            startActivity(intent);
+            AlertDialog.Builder mBulid = new AlertDialog.Builder(HomeActivity.this);
+//            imm=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+
+            final ArrayAdapter<String> adapter=new ArrayAdapter<String>(HomeActivity.this,android.R.layout.select_dialog_singlechoice);
+            adapter.add("수학");
+            adapter.add("C언어");
+            adapter.add("웹프로그래밍");
+
+            LayoutInflater inf= (LayoutInflater)getApplicationContext().getSystemService(getApplicationContext().LAYOUT_INFLATER_SERVICE);
+            final View mv = inf.inflate(R.layout.add_exams, null);
+            ListView listView=(ListView)mv.findViewById(R.id.seSub);
+            Button bt=(Button)mv.findViewById(R.id.go_add_exam);
+
+            mBulid.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String strName=adapter.getItem(which);
+                    Intent intent=new Intent(HomeActivity.this,add_exam.class);
+                    intent.putExtra("Name",strName);
+                    startActivity(intent);
+
+
+//                    AlertDialog.Builder innB=new AlertDialog.Builder(HomeActivity.this);
+//                    innB.setMessage("당신이 선택한것은");
+//                    innB.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                        }
+//                    });
+//                    innB.show();
+                }
+            });
+
+
+
+            bt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(HomeActivity.this,add_exam.class);
+                    startActivity(intent);
+                }
+            });
+
+            mBulid.setView(mv);
+            mBulid.create();
+            mBulid.show();
+
         } else if (id == R.id.nav_send) {
 
         }

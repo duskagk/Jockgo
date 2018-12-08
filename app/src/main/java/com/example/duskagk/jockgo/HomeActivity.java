@@ -138,7 +138,7 @@ public class HomeActivity extends AppCompatActivity
             LayoutInflater inf= (LayoutInflater)getApplicationContext().getSystemService(getApplicationContext().LAYOUT_INFLATER_SERVICE);
             final View mv = inf.inflate(R.layout.add_exams, null);
             ListView listView=(ListView)mv.findViewById(R.id.seSub);
-            Button bt=(Button)mv.findViewById(R.id.go_add_exam);
+
 
             mBulid.setAdapter(adapter, new DialogInterface.OnClickListener() {
                 @Override
@@ -146,27 +146,6 @@ public class HomeActivity extends AppCompatActivity
                     String strName=adapter.getItem(which);
                     Intent intent=new Intent(HomeActivity.this,add_exam.class);
                     intent.putExtra("Name",strName);
-                    startActivity(intent);
-
-
-//                    AlertDialog.Builder innB=new AlertDialog.Builder(HomeActivity.this);
-//                    innB.setMessage("당신이 선택한것은");
-//                    innB.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//                    innB.show();
-                }
-            });
-
-
-
-            bt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent=new Intent(HomeActivity.this,add_exam.class);
                     startActivity(intent);
                 }
             });

@@ -2,8 +2,10 @@ package com.example.duskagk.jockgo;
 
 import android.content.Intent;
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,8 +35,9 @@ public class add_exam extends AppCompatActivity {
     /////
     int b_no = 10;
     //////임시
-
-
+    int odid=0;
+    LinearLayout layout=null;
+    LinearLayout laybox=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,11 +50,40 @@ public class add_exam extends AppCompatActivity {
 
         Button btnSubject = (Button) findViewById(R.id.btnExamSubject);
         Button btnDenouement = (Button) findViewById(R.id.btnExamDenouement);
+        Button btnanswer=(Button)findViewById(R.id.addanswer);
 
-        getSpinner();
+
+
+
+
 
         btnSubject.setOnClickListener(clickBtn("subject"));
         btnDenouement.setOnClickListener(clickBtn("denouement"));
+        btnanswer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(odid<4){
+                TextView edt=new TextView(add_exam.this);
+                edt.setText("오답");
+                String strColor = "#ff0000";
+                edt.setTextColor(Color.parseColor(strColor));
+                layout=(LinearLayout)findViewById(R.id.answers);
+//                laybox=(LinearLayout)findViewById(R.id.asdfxcv);
+                EditText odap=new EditText(add_exam.this);
+                odap.setId(odid);
+                odap.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                edt.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                layout.addView(odap);
+                layout.addView(edt);
+                odid++;
+                }
+            }
+        });
+
     }
 
     private void getSpinner(){

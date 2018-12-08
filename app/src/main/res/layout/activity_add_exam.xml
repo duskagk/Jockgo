@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".add_exam">
-    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     
     <RelativeLayout
         android:layout_width="match_parent"
@@ -73,12 +75,14 @@
                 android:text="+"/>
 
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/answpcnrk3"
             android:layout_below="@+id/answpcnrk2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -89,37 +93,67 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
             <LinearLayout
+                android:id="@+id/answers"
                 android:paddingHorizontal="20dp"
                 android:layout_width="match_parent"
+                android:orientation="vertical"
                 android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="10"
+                    android:layout_height="wrap_content">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="정답"/>
             <EditText
                 android:layout_width="match_parent"
-                android:layout_weight="4"
                 android:layout_height="wrap_content" />
-                <Button
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="+"/>
+                    android:gravity="bottom"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:id="@+id/addanswer"
+                        android:layout_width="59dp"
+                        android:layout_height="wrap_content"
+                        android:text="+" />
+                </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/asdfxcv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
             </LinearLayout>
         </LinearLayout>
+
 <LinearLayout
     android:layout_below="@+id/answpcnrk3"
     android:layout_width="match_parent"
-    android:foregroundGravity="right"
+    android:gravity="center"
     android:layout_height="wrap_content">
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="제출" />
+
 </LinearLayout>
+
     </RelativeLayout>
-    
-    
+
+    </ScrollView>
     
     
     

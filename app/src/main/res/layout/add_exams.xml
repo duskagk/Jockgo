@@ -8,12 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
-    <Button
-        android:id="@+id/go_add_exam"
-        android:layout_gravity="right"
-        android:layout_below="@+id/seSub"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="선택"/>
+
 
 </RelativeLayout>

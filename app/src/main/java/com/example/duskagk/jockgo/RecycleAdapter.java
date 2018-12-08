@@ -135,10 +135,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                                 Toast.makeText(
                                         v.getContext(),
                                         listDataHeader.get(groupPosition)
-                                                + " : "
-                                                + listDataChild.get(
-                                                listDataHeader.get(groupPosition)).get(
-                                                childPosition), Toast.LENGTH_SHORT)
+                                                + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
                                         .show();
                                 return false;
                             }

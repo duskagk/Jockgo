@@ -1,10 +1,17 @@
 package com.example.duskagk.jockgo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.app.AlertDialog;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.Image;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.LayoutInflater;
@@ -22,12 +29,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class add_exam extends AppCompatActivity {
+    final int REQ_CODE_SELECT_IMAGE=100;
 
 
     JSONArray jsonArray;
@@ -38,6 +49,27 @@ public class add_exam extends AppCompatActivity {
     int odid=0;
     LinearLayout layout=null;
     LinearLayout laybox=null;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(requestCode==REQ_CODE_SELECT_IMAGE){
+            if(resultCode==Activity.RESULT_OK){
+                try{
+
+                    Bitmap img_bit=MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
+                    ImageView img=(ImageView)findViewById(R.id.seimg);
+                    img.setImageBitmap(img_bit);
+                }catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +83,17 @@ public class add_exam extends AppCompatActivity {
         Button btnSubject = (Button) findViewById(R.id.btnExamSubject);
         Button btnDenouement = (Button) findViewById(R.id.btnExamDenouement);
         Button btnanswer=(Button)findViewById(R.id.addanswer);
+        Button imgbtn=(Button)findViewById(R.id.addimg);
 
+        imgbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent imgin=new Intent(Intent.ACTION_PICK);
+                imgin.setType(MediaStore.Images.Media.CONTENT_TYPE);
+                imgin.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(imgin,REQ_CODE_SELECT_IMAGE);
+            }
+        });
 
 
 
@@ -68,7 +110,7 @@ public class add_exam extends AppCompatActivity {
                 String strColor = "#ff0000";
                 edt.setTextColor(Color.parseColor(strColor));
                 layout=(LinearLayout)findViewById(R.id.answers);
-//                laybox=(LinearLayout)findViewById(R.id.asdfxcv);
+                laybox=(LinearLayout)findViewById(R.id.laybox);
                 EditText odap=new EditText(add_exam.this);
                 odap.setId(odid);
                 odap.setLayoutParams(new LinearLayout.LayoutParams(
@@ -77,13 +119,29 @@ public class add_exam extends AppCompatActivity {
                 edt.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
+                    odap.setHint("오답");
+
                 layout.addView(odap);
-                layout.addView(edt);
+                laybox.onViewAdded(layout);
                 odid++;
                 }
             }
         });
 
+    }
+
+
+    public String getImageToUri(Uri data){
+        String[] proj={MediaStore.Images.Media.DATA};
+        Cursor cursor = managedQuery(data, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        String imgPath = cursor.getString(column_index);
+        String imgName = imgPath.substring(imgPath.lastIndexOf("/")+1);
+
+        return imgName;
     }
 
     private void getSpinner(){

@@ -25,11 +25,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.Inflater;
 
@@ -40,9 +44,16 @@ public class HomeActivity extends AppCompatActivity
     private ViewPager viewPager;
     private AppBarLayout appbar;
 
-    List<String> li;
-    InputMethodManager imm;
-    String[] lli=new String[]{"C언어","웹프로그래밍","수학"};
+    ExpandableListAdapter expandableListAdapter;
+    ExpandableListView expandableListView;
+//
+//    List<String> headerList = new ArrayList<>();
+//    HashMap<String, List<String>> childList = new HashMap<>();
+
+    ArrayList<String> headerList;
+    HashMap<String,List<String>> childList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +72,11 @@ public class HomeActivity extends AppCompatActivity
         adt.AddFragment(new Fragstudyline(),"스터디라인");
         viewPager.setAdapter(adt);
         tabLayout.setupWithViewPager(viewPager);
+
+
+        expandableListView = findViewById(R.id.expandableListView);
+        prepareMenuData();
+        populateExpandableList();
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -119,17 +135,64 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private void prepareMenuData() {
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        headerList = new ArrayList<String>();
+        childList = new HashMap<String, List<String>>();
+//        mChildListContent = new ArrayList<string>();
 
-        if (id == R.id.nav_regist) {
+
+        headerList.add("정보변경");
+//        childList.put(headerList(0),null);
+
+
+        headerList.add("등록");
+
+        List<String> 등록=new ArrayList<>();
+        등록.add("문제등록");
+        등록.add("과목등록");
+
+
+
+        childList.put(headerList.get(1),등록);
+
+    }
+
+
+    private void populateExpandableList() {
+
+        expandableListAdapter = new ExpandableListAdapter(this, headerList, childList);
+        expandableListView.setAdapter(expandableListAdapter);
+
+        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+
+
+                return false;
+            }
+        });
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+
+                Toast.makeText(
+                        v.getContext(),
+                        headerList.get(groupPosition)
+                                + " : " + childList.get(headerList.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
+                        .show();
+
+                Navigation(childList.get(headerList.get(groupPosition)).get(childPosition));
+
+                return false;
+            }
+        });
+    }
+
+public void Navigation(String nav){
+        if(nav=="문제등록"){
             AlertDialog.Builder mBulid = new AlertDialog.Builder(HomeActivity.this);
-//            imm=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-
             final ArrayAdapter<String> adapter=new ArrayAdapter<String>(HomeActivity.this,android.R.layout.select_dialog_singlechoice);
             adapter.add("수학");
             adapter.add("C언어");
@@ -153,6 +216,26 @@ public class HomeActivity extends AppCompatActivity
             mBulid.setView(mv);
             mBulid.create();
             mBulid.show();
+
+        }else if(nav=="과목등록"){
+            Intent intent=new Intent(HomeActivity.this,add_subject.class);
+            startActivity(intent);
+
+        }
+}
+
+
+
+
+
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_regist) {
 
         } else if (id == R.id.nav_send) {
 

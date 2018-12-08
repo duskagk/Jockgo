@@ -27,10 +27,12 @@
             android:layout_height="wrap_content">
 
             <TextView
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="대단원"/>
             <Spinner
+                android:id="@+id/examSubject"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_weight="4"
@@ -41,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:id="@+id/btnExamSubject"
                 android:text="+"/>
 
         </LinearLayout>
@@ -55,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:text="중단원"/>
             <Spinner
+                android:id="@+id/examDenouement"
                 android:layout_width="match_parent"
                 android:layout_weight="4"
                 android:layout_gravity="center"
@@ -65,6 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:id="@+id/btnExamDenouement"
                 android:text="+"/>
 
         </LinearLayout>

@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -32,8 +33,11 @@ public class add_exam extends AppCompatActivity {
 
     JSONArray jsonArray;
     String selectSubject;
+    ArrayList<EditText> wAnswer = new ArrayList<>();
+
+    //ArrayList<Integer> s_no;
     /////
-    int b_no;
+    int b_no, s_no, u_no;
     //////임시
     int odid=0;
     LinearLayout layout=null;
@@ -44,15 +48,19 @@ public class add_exam extends AppCompatActivity {
         setContentView(R.layout.activity_add_exam);
         String str;
         TextView subname=(TextView)findViewById(R.id.add_sub_name);
+
         Intent intent = getIntent();
         subname.setText(intent.getExtras().getString("name"));
         b_no = intent.getIntExtra("num", 0);
+        MyApplication myApp = (MyApplication)getApplication();
+        u_no = myApp.getNo();
 
         getSpinner();
 
         Button btnSubject = (Button) findViewById(R.id.btnExamSubject);
         Button btnDenouement = (Button) findViewById(R.id.btnExamDenouement);
-        Button btnanswer=(Button)findViewById(R.id.addanswer);
+        Button btnAnswer=(Button)findViewById(R.id.addanswer);
+        Button btnPush=(Button)findViewById(R.id.examPush);
 
 
 
@@ -61,7 +69,8 @@ public class add_exam extends AppCompatActivity {
 
         btnSubject.setOnClickListener(clickBtn("subject"));
         btnDenouement.setOnClickListener(clickBtn("denouement"));
-        btnanswer.setOnClickListener(new View.OnClickListener() {
+        btnPush.setOnClickListener(clickPush());
+        btnAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(odid<4){
@@ -72,7 +81,7 @@ public class add_exam extends AppCompatActivity {
                 layout=(LinearLayout)findViewById(R.id.answers);
 //                laybox=(LinearLayout)findViewById(R.id.asdfxcv);
                 EditText odap=new EditText(add_exam.this);
-                odap.setId(odid);
+                wAnswer.add(odap);
                 odap.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -88,20 +97,49 @@ public class add_exam extends AppCompatActivity {
 
     }
 
+    private View.OnClickListener clickPush() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinnerSubject = (Spinner)findViewById(R.id.examSubject);
+                Spinner spinnerDenouement = (Spinner)findViewById(R.id.examDenouement);
+
+                EditText problemContent = (EditText)findViewById(R.id.add_exam);
+                EditText answerContent = (EditText)findViewById(R.id.examAnswer);
+
+                JSONObject values = new JSONObject();
+
+                try {
+                    values.put("s_no", s_no);
+                    values.put("u_no", u_no);
+                    values.put("p_problem", problemContent.getText().toString());
+                    for (int i = 1; i <= wAnswer.size(); i++){
+                        values.put("a_choice_" + i, wAnswer.get(i-1).getText().toString());
+                    }
+                    values.put("a_choice_" + (odid+1), answerContent.getText().toString());
+                    values.put("a_answer", answerContent.getText().toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem", values, "POST");
+                networkTask.execute();
+            }
+        };
+    }
+
     private void getSpinner(){
-
-
-
         Spinner spinner = (Spinner)findViewById(R.id.examSubject);
         NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/subject?b_no=" + b_no, null, "GET");
         try {
             String result = networkTask.execute().get();
             Set<String> set = new HashSet<String>();
 
-
-
             jsonArray=new JSONArray(result);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_dropdown_item);
+
 
             for(int i = 0; i< jsonArray.length(); i++){
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
@@ -134,19 +172,22 @@ public class add_exam extends AppCompatActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>( getApplicationContext(), android.R.layout.simple_spinner_dropdown_item);
                 selectSubject = (String) parent.getItemAtPosition(position);
 
+                //s_no = new ArrayList<Integer>();
                 for (int i = 0; i < jsonArray.length(); i++){
                     try {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         if (selectSubject.equals(jsonObj.getString("s_subject"))){
                             adapter.add(jsonObj.getString("s_denouement"));
+
+                            spinner.setAdapter(adapter);
+                            spinner.setOnItemSelectedListener(getNum(jsonObj.getInt("s_no")));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                 }
-                spinner.setAdapter(adapter);
-                //spinner.setOnItemClickListener(selectSpinner());
+
             }
 
             @Override
@@ -154,6 +195,20 @@ public class add_exam extends AppCompatActivity {
 
             }
 
+        };
+    }
+
+    private AdapterView.OnItemSelectedListener getNum(final int num){
+        return new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                s_no = num;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         };
     }
 

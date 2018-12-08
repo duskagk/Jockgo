@@ -144,10 +144,11 @@
     android:layout_width="match_parent"
     android:gravity="center"
     android:layout_height="wrap_content">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="제출" />
+    <Button
+        android:id="@+id/examPush"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="제출" />
 
 </LinearLayout>
 

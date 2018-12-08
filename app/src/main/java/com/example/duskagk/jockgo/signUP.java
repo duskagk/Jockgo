@@ -69,7 +69,6 @@ public class signUP extends AppCompatActivity {
             }
 
             mSchool.setAdapter(adapter);
-            mSchool.setSelection(0);
 
         } catch (InterruptedException e) {
             e.printStackTrace();

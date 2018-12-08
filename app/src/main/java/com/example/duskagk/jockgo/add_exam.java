@@ -168,7 +168,7 @@ public class add_exam extends AppCompatActivity {
                 EditText editText = (EditText) inflateView.findViewById(R.id.editTextCategory);
                 Button button = (Button)inflateView.findViewById(R.id.btnCategoryPush);
 
-                button.setOnClickListener(clickPush(s, editText));
+                button.setOnClickListener(clickSpinnerPush(s, editText));
 
 
                 dialog.setView(inflateView);
@@ -178,7 +178,7 @@ public class add_exam extends AppCompatActivity {
         };
     }
 
-    private View.OnClickListener clickPush(final String s, final EditText ed){
+    private View.OnClickListener clickSpinnerPush(final String s, final EditText ed){
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {

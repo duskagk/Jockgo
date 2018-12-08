@@ -48,11 +48,11 @@
             android:layout_height="wrap_content"
             android:hint="문제개수"
             android:layout_weight="2"/>
-            <Button
-                android:id="@+id/mock_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="진행"/>
+        <Button
+            android:id="@+id/mock_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="진행"/>
     </LinearLayout>
 
     </RelativeLayout>

@@ -112,6 +112,7 @@
                 <!--android:layout_height="wrap_content"-->
                 <!--android:text="정답"/>-->
             <EditText
+                android:id="@+id/examAnswer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="정답"/>
@@ -170,20 +171,19 @@
         android:layout_height="wrap_content"
         android:background="@drawable/robutton2"
         android:text="이미지"/>
-
     <Button
+        android:id="@+id/examPush"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/robutton"
-        android:text="제출"
-        android:layout_gravity="right"/>
+        android:text="제출" />
+
 </LinearLayout>
 
     </RelativeLayout>
 
     </ScrollView>
-
-
+    
+    
     
     
 </android.support.constraint.ConstraintLayout>

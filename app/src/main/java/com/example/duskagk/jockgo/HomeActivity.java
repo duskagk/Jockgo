@@ -32,9 +32,14 @@ import android.widget.TabHost;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.Inflater;
 
 public class HomeActivity extends AppCompatActivity
@@ -42,7 +47,7 @@ public class HomeActivity extends AppCompatActivity
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private AppBarLayout appbar;
+    private ArrayList<Integer> b_no = new ArrayList<>();
 
     ExpandableListAdapter expandableListAdapter;
     ExpandableListView expandableListView;
@@ -208,7 +213,8 @@ public void Navigation(String nav){
                 public void onClick(DialogInterface dialog, int which) {
                     String strName=adapter.getItem(which);
                     Intent intent=new Intent(HomeActivity.this,add_exam.class);
-                    intent.putExtra("Name",strName);
+                    intent.putExtra("name",adapter.getItem(which));
+                    intent.putExtra("num", b_no.get(which));
                     startActivity(intent);
                 }
             });

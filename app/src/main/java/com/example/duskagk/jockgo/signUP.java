@@ -1,5 +1,6 @@
 package com.example.duskagk.jockgo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -68,7 +69,6 @@ public class signUP extends AppCompatActivity {
             }
 
             mSchool.setAdapter(adapter);
-            mSchool.setSelection(0);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -97,6 +97,9 @@ public class signUP extends AppCompatActivity {
 
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/register", values, "POST");
                 networkTask.execute();
+
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
 
             }
             else if(checkEmail(mId.getText().toString())==false){

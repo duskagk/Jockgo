@@ -60,6 +60,7 @@ public class Fraghome extends Fragment {
         MyApplication myApp = (MyApplication)getActivity().getApplication();
         TextView textView = (TextView)view.findViewById(R.id.test);
         textView.setText(myApp.getName());
+        if(myApp.isLogin()){  view.findViewById(R.id.login).setVisibility(View.INVISIBLE); }
         return view;
     }
 

@@ -32,6 +32,7 @@ import org.w3c.dom.Text;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -43,8 +44,11 @@ public class add_exam extends AppCompatActivity {
 
     JSONArray jsonArray;
     String selectSubject;
+    ArrayList<EditText> wAnswer = new ArrayList<>();
+
+    //ArrayList<Integer> s_no;
     /////
-    int b_no = 10;
+    int b_no, s_no, u_no;
     //////임시
     int odid=0;
     LinearLayout layout=null;
@@ -76,14 +80,19 @@ public class add_exam extends AppCompatActivity {
         setContentView(R.layout.activity_add_exam);
         String str;
         TextView subname=(TextView)findViewById(R.id.add_sub_name);
+
         Intent intent = getIntent();
-        str=intent.getExtras().getString("Name");
-        subname.setText(str);
+        subname.setText(intent.getExtras().getString("name"));
+        b_no = intent.getIntExtra("num", 0);
+        MyApplication myApp = (MyApplication)getApplication();
+        u_no = myApp.getNo();
+
+        getSpinner();
 
         Button btnSubject = (Button) findViewById(R.id.btnExamSubject);
         Button btnDenouement = (Button) findViewById(R.id.btnExamDenouement);
-        Button btnanswer=(Button)findViewById(R.id.addanswer);
-        Button imgbtn=(Button)findViewById(R.id.addimg);
+        Button btnAnswer=(Button)findViewById(R.id.addanswer);
+        Button btnPush=(Button)findViewById(R.id.examPush);
 
         imgbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +119,7 @@ public class add_exam extends AppCompatActivity {
                 String strColor = "#ff0000";
                 edt.setTextColor(Color.parseColor(strColor));
                 layout=(LinearLayout)findViewById(R.id.answers);
-                laybox=(LinearLayout)findViewById(R.id.laybox);
+//                laybox=(LinearLayout)findViewById(R.id.asdfxcv);
                 EditText odap=new EditText(add_exam.this);
                 odap.setId(odid);
                 odap.setLayoutParams(new LinearLayout.LayoutParams(
@@ -122,7 +131,7 @@ public class add_exam extends AppCompatActivity {
                     odap.setHint("오답");
 
                 layout.addView(odap);
-                laybox.onViewAdded(layout);
+                layout.addView(edt);
                 odid++;
                 }
             }
@@ -144,6 +153,39 @@ public class add_exam extends AppCompatActivity {
         return imgName;
     }
 
+    private View.OnClickListener clickPush() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinnerSubject = (Spinner)findViewById(R.id.examSubject);
+                Spinner spinnerDenouement = (Spinner)findViewById(R.id.examDenouement);
+
+                EditText problemContent = (EditText)findViewById(R.id.add_exam);
+                EditText answerContent = (EditText)findViewById(R.id.examAnswer);
+
+                JSONObject values = new JSONObject();
+
+                try {
+                    values.put("s_no", s_no);
+                    values.put("u_no", u_no);
+                    values.put("p_problem", problemContent.getText().toString());
+                    for (int i = 1; i <= wAnswer.size(); i++){
+                        values.put("a_choice_" + i, wAnswer.get(i-1).getText().toString());
+                    }
+                    values.put("a_choice_" + (odid+1), answerContent.getText().toString());
+                    values.put("a_answer", answerContent.getText().toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem", values, "POST");
+                networkTask.execute();
+            }
+        };
+    }
+
     private void getSpinner(){
 
 
@@ -158,6 +200,7 @@ public class add_exam extends AppCompatActivity {
 
             jsonArray=new JSONArray(result);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_dropdown_item);
+
 
             for(int i = 0; i< jsonArray.length(); i++){
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
@@ -190,19 +233,37 @@ public class add_exam extends AppCompatActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>( getApplicationContext(), android.R.layout.simple_spinner_dropdown_item);
                 selectSubject = (String) parent.getItemAtPosition(position);
 
+                //s_no = new ArrayList<Integer>();
                 for (int i = 0; i < jsonArray.length(); i++){
                     try {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         if (selectSubject.equals(jsonObj.getString("s_subject"))){
                             adapter.add(jsonObj.getString("s_denouement"));
+
+                            spinner.setAdapter(adapter);
+                            spinner.setOnItemSelectedListener(getNum(jsonObj.getInt("s_no")));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                 }
-                spinner.setAdapter(adapter);
-                //spinner.setOnItemClickListener(selectSpinner());
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        };
+    }
+
+    private AdapterView.OnItemSelectedListener getNum(final int num){
+        return new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                s_no = num;
             }
 
             @Override
@@ -224,7 +285,7 @@ public class add_exam extends AppCompatActivity {
                 EditText editText = (EditText) inflateView.findViewById(R.id.editTextCategory);
                 Button button = (Button)inflateView.findViewById(R.id.btnCategoryPush);
 
-                button.setOnClickListener(clickPush(s, editText));
+                button.setOnClickListener(clickSpinnerPush(s, editText));
 
 
                 dialog.setView(inflateView);
@@ -234,7 +295,7 @@ public class add_exam extends AppCompatActivity {
         };
     }
 
-    private View.OnClickListener clickPush(final String s, final EditText ed){
+    private View.OnClickListener clickSpinnerPush(final String s, final EditText ed){
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {

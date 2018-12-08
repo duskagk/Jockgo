@@ -93,7 +93,7 @@ public class add_exam extends AppCompatActivity {
         Button btnDenouement = (Button) findViewById(R.id.btnExamDenouement);
         Button btnAnswer=(Button)findViewById(R.id.addanswer);
         Button btnPush=(Button)findViewById(R.id.examPush);
-
+        Button imgbtn=(Button)findViewById(R.id.addimg);
         imgbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,9 +108,10 @@ public class add_exam extends AppCompatActivity {
 
 
 
+
         btnSubject.setOnClickListener(clickBtn("subject"));
         btnDenouement.setOnClickListener(clickBtn("denouement"));
-        btnanswer.setOnClickListener(new View.OnClickListener() {
+        btnAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(odid<4){
@@ -286,8 +287,6 @@ public class add_exam extends AppCompatActivity {
                 Button button = (Button)inflateView.findViewById(R.id.btnCategoryPush);
 
                 button.setOnClickListener(clickSpinnerPush(s, editText));
-
-
                 dialog.setView(inflateView);
                 dialog.create();
                 dialog.show();

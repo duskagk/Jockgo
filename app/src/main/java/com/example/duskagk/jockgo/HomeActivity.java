@@ -29,8 +29,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TabHost;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.Inflater;
 
 public class HomeActivity extends AppCompatActivity
@@ -38,7 +43,7 @@ public class HomeActivity extends AppCompatActivity
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private AppBarLayout appbar;
+    private ArrayList<Integer> b_no = new ArrayList<>();
 
     List<String> li;
     InputMethodManager imm;
@@ -127,13 +132,33 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_regist) {
+
             AlertDialog.Builder mBulid = new AlertDialog.Builder(HomeActivity.this);
 //            imm=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
 
-            final ArrayAdapter<String> adapter=new ArrayAdapter<String>(HomeActivity.this,android.R.layout.select_dialog_singlechoice);
-            adapter.add("수학");
-            adapter.add("C언어");
-            adapter.add("웹프로그래밍");
+            NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/book", null, "GET");
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_dropdown_item);
+
+            try {
+                String result = networkTask.execute().get();
+
+                JSONArray jsonArray=new JSONArray(result);
+
+                for(int i = 0; i< jsonArray.length(); i++){
+                    JSONObject jsonObj = jsonArray.getJSONObject(i);
+                    adapter.add(jsonObj.getString("b_name"));
+                    b_no.add(jsonObj.getInt("b_no"));
+
+                }
+
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             LayoutInflater inf= (LayoutInflater)getApplicationContext().getSystemService(getApplicationContext().LAYOUT_INFLATER_SERVICE);
             final View mv = inf.inflate(R.layout.add_exams, null);
@@ -143,9 +168,9 @@ public class HomeActivity extends AppCompatActivity
             mBulid.setAdapter(adapter, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    String strName=adapter.getItem(which);
                     Intent intent=new Intent(HomeActivity.this,add_exam.class);
-                    intent.putExtra("Name",strName);
+                    intent.putExtra("name",adapter.getItem(which));
+                    intent.putExtra("num", b_no.get(which));
                     startActivity(intent);
                 }
             });

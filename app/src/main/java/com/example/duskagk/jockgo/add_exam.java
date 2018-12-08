@@ -33,7 +33,7 @@ public class add_exam extends AppCompatActivity {
     JSONArray jsonArray;
     String selectSubject;
     /////
-    int b_no = 10;
+    int b_no;
     //////임시
     int odid=0;
     LinearLayout layout=null;
@@ -45,8 +45,10 @@ public class add_exam extends AppCompatActivity {
         String str;
         TextView subname=(TextView)findViewById(R.id.add_sub_name);
         Intent intent = getIntent();
-        str=intent.getExtras().getString("Name");
-        subname.setText(str);
+        subname.setText(intent.getExtras().getString("name"));
+        b_no = intent.getIntExtra("num", 0);
+
+        getSpinner();
 
         Button btnSubject = (Button) findViewById(R.id.btnExamSubject);
         Button btnDenouement = (Button) findViewById(R.id.btnExamDenouement);

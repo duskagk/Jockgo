@@ -1,16 +1,22 @@
 package com.example.duskagk.jockgo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,9 +35,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,7 +60,8 @@ public class add_exam extends AppCompatActivity {
     JSONArray jsonArray;
     String selectSubject;
     ArrayList<EditText> wAnswer = new ArrayList<>();
-
+    Bitmap img_bit;
+    boolean isImage = false;
     //ArrayList<Integer> s_no;
     /////
     int b_no, s_no, u_no;
@@ -54,29 +70,19 @@ public class add_exam extends AppCompatActivity {
     LinearLayout layout=null;
     LinearLayout laybox=null;
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if(requestCode==REQ_CODE_SELECT_IMAGE){
-            if(resultCode==Activity.RESULT_OK){
-                try{
-
-                    Bitmap img_bit=MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
-                    ImageView img=(ImageView)findViewById(R.id.seimg);
-                    img.setImageBitmap(img_bit);
-                }catch (FileNotFoundException e){
-                    e.printStackTrace();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
+    String UploadImgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .detectDiskWrites()
+                .detectNetwork()
+                .penaltyLog().build());
+        verifyStoragePermissions(this);
+
         setContentView(R.layout.activity_add_exam);
         String str;
         TextView subname=(TextView)findViewById(R.id.add_sub_name);
@@ -107,8 +113,7 @@ public class add_exam extends AppCompatActivity {
 
 
 
-
-
+        btnPush.setOnClickListener(clickPush());
         btnSubject.setOnClickListener(clickBtn("subject"));
         btnDenouement.setOnClickListener(clickBtn("denouement"));
         btnAnswer.setOnClickListener(new View.OnClickListener() {
@@ -140,18 +145,36 @@ public class add_exam extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-    public String getImageToUri(Uri data){
-        String[] proj={MediaStore.Images.Media.DATA};
-        Cursor cursor = managedQuery(data, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        if(requestCode==REQ_CODE_SELECT_IMAGE){
+            if(resultCode==Activity.RESULT_OK){
+                try{
+                    isImage = true;
 
-        cursor.moveToFirst();
+                    String[] name_Str = getImageNameToUri(data.getData());
+                    Uri selPhotoUri = data.getData();
+                    //절대경로 획득**
+                    Cursor c = getContentResolver().query(Uri.parse(selPhotoUri.toString()), null, null, null, null);
+                    c.moveToNext();
+                    //String absolutePath = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
 
-        String imgPath = cursor.getString(column_index);
-        String imgName = imgPath.substring(imgPath.lastIndexOf("/")+1);
+                    Bitmap img_bit=MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
+                    ImageView img=(ImageView)findViewById(R.id.seimg);
 
-        return imgName;
+                    //saveBitmaptoJpeg(img_bit, "tmp" ,name_Str[0]);
+                    UploadImgPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +name_Str[1];
+                    img.setImageBitmap(img_bit);
+
+                }catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
     private View.OnClickListener clickPush() {
@@ -175,6 +198,11 @@ public class add_exam extends AppCompatActivity {
                     }
                     values.put("a_choice_" + (odid+1), answerContent.getText().toString());
                     values.put("a_answer", answerContent.getText().toString());
+                    if (isImage){
+                        long now = System.currentTimeMillis();
+                        String MD5 = getMD5(String.valueOf(now));
+                        values.put("p_image", MD5);
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -182,15 +210,13 @@ public class add_exam extends AppCompatActivity {
 
 
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem", values, "POST");
+                imageUpload(UploadImgPath, "jockgo");
                 networkTask.execute();
             }
         };
     }
 
     private void getSpinner(){
-
-
-
         Spinner spinner = (Spinner)findViewById(R.id.examSubject);
         NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/subject?b_no=" + b_no, null, "GET");
         try {
@@ -286,15 +312,19 @@ public class add_exam extends AppCompatActivity {
                 EditText editText = (EditText) inflateView.findViewById(R.id.editTextCategory);
                 Button button = (Button)inflateView.findViewById(R.id.btnCategoryPush);
 
-                button.setOnClickListener(clickSpinnerPush(s, editText));
+
                 dialog.setView(inflateView);
-                dialog.create();
-                dialog.show();
+                AlertDialog alertDialog = dialog.create();
+                button.setOnClickListener(clickSpinnerPush(s, editText, alertDialog));
+                //dialog.create();
+                alertDialog.show();
+
+
             }
         };
     }
 
-    private View.OnClickListener clickSpinnerPush(final String s, final EditText ed){
+    private View.OnClickListener clickSpinnerPush(final String s, final EditText ed, final AlertDialog alertDialog){
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -322,9 +352,182 @@ public class add_exam extends AppCompatActivity {
 
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/subject", values, "POST");
                 networkTask.execute();
+
+                getSpinner();
+                alertDialog.dismiss();
             }
         };
     }
+
+    public String getMD5(String str){
+
+        String MD5 = "";
+
+        try{
+
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            md.update(str.getBytes());
+
+            byte byteData[] = md.digest();
+
+            StringBuffer sb = new StringBuffer();
+
+            for(int i = 0 ; i < byteData.length ; i++){
+
+                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
+
+            }
+
+            MD5 = sb.toString();
+
+
+
+        }catch(NoSuchAlgorithmException e){
+
+            e.printStackTrace();
+
+            MD5 = null;
+
+        }
+
+        return MD5;
+
+    }
+
+    public String[] getImageNameToUri(Uri data)
+    {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(data, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        String imgPath = cursor.getString(column_index);
+        String imgName = imgPath.substring(imgPath.lastIndexOf("/") + 1);
+        String path = imgPath.substring(imgPath.lastIndexOf("/0/") + 3);
+        String[] str = new String[2];
+        str[0] = imgName;
+        str[1] = path;
+        return str;
+    }
+
+    public void saveBitmaptoJpeg(Bitmap bitmap, String folder, String name){
+        String ex_storage = Environment.getExternalStorageDirectory().getAbsolutePath();
+        // Get Absolute Path in External Sdcard
+        String foler_name = "/"+folder+"/";
+        String file_name = name+".jpg";
+        String string_path = ex_storage+foler_name;
+        UploadImgPath = string_path+file_name;
+
+
+        File file_path;
+        try{
+            file_path = new File(string_path);
+            if(!file_path.isDirectory()){
+                file_path.mkdirs();
+            }
+            FileOutputStream out = new FileOutputStream(string_path+file_name);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+
+        }catch(FileNotFoundException exception){
+            Log.e("FileNotFoundException", exception.getMessage());
+        }catch(IOException exception){
+            Log.e("IOException", exception.getMessage());
+        }
+    }
+
+    public void imageUpload(final String filename, String stidx) {
+        String urlString = "https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/upload";
+
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+
+        try {
+            FileInputStream mFileInputStream = new FileInputStream(filename);
+
+            URL connectUrl = new URL(urlString);
+            Log.d("Test", "mFileInputStream  is " + mFileInputStream);
+
+            // open connection
+            HttpURLConnection con = (HttpURLConnection) connectUrl.openConnection();
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.setUseCaches(false);
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Connection", "Keep-Alive");
+            con.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
+            // write data
+            DataOutputStream dos = new DataOutputStream(con.getOutputStream());
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"stidx\"\r\n\r\n" + stidx + lineEnd);
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + filename + "\"" + lineEnd);
+            dos.writeBytes("Content-Type: application/octet-stream\r\n\r\n");
+
+            int bytesAvailable = mFileInputStream.available();
+            int maxBufferSize = 1024;
+            int bufferSize = Math.min(bytesAvailable, maxBufferSize);
+
+            byte[] buffer = new byte[bufferSize];
+            int bytesRead = mFileInputStream.read(buffer, 0, bufferSize);
+
+            Log.d("Test", "image byte is " + bytesRead);
+
+            // read image
+            while (bytesRead > 0) {
+                dos.write(buffer, 0, bufferSize);
+                bytesAvailable = mFileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = mFileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            // close streams
+            Log.e("Test", "File is written");
+            mFileInputStream.close();
+            dos.flush(); // finish upload...
+
+            // get response
+            int ch;
+            InputStream is = con.getInputStream();
+            StringBuffer b = new StringBuffer();
+            while ((ch = is.read()) != -1) {
+                b.append((char) ch);
+            }
+            String s = b.toString();
+            Log.e("Test", "result = " + s);
+            dos.close();
+
+
+        } catch (Exception e) {
+            Log.d("Test", "exception " + e.getMessage());
+            // TODO: handle exception
+        }
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    new String[]{"PERMISSIONS_STORAGE",
+                            "REQUEST_EXTERNAL_STORAGE"},
+                    1
+            );
+        }
+    }
+
+
 
 
 }

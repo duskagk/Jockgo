@@ -9,6 +9,11 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.PERMISSIONS_STORAGE"/>
+    <uses-permission android:name="android.permission.REQUEST_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+
 
     <application
         android:name=".MyApplication"
@@ -39,7 +44,6 @@
         <activity android:name=".Mock_view" />
         <activity android:name=".add_subject" />
         <activity android:name=".add_exam" />
-        <activity android:name=".add_category"></activity>
     </application>
 
 </manifest>

@@ -97,8 +97,6 @@ public class HomeActivity extends AppCompatActivity
     private void readUser() {
         MyApplication myApp = (MyApplication)getApplication();
         SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
-        pref.getString("hi", "");
-
         if (pref.getBoolean("login", false)){
             myApp.setLogin(true);
             myApp.setNo(pref.getInt("no", -1));
@@ -198,10 +196,24 @@ public class HomeActivity extends AppCompatActivity
 public void Navigation(String nav){
         if(nav=="문제등록"){
             AlertDialog.Builder mBulid = new AlertDialog.Builder(HomeActivity.this);
-            final ArrayAdapter<String> adapter=new ArrayAdapter<String>(HomeActivity.this,android.R.layout.select_dialog_singlechoice);
-            adapter.add("수학");
-            adapter.add("C언어");
-            adapter.add("웹프로그래밍");
+
+            NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/book", null, "GET");
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_dropdown_item);
+            try {
+                String result = networkTask.execute().get();
+                JSONArray jsonArray=new JSONArray(result);
+                for(int i = 0; i< jsonArray.length(); i++){
+                    JSONObject jsonObj = jsonArray.getJSONObject(i);
+                    adapter.add(jsonObj.getString("b_name"));
+                    b_no.add(jsonObj.getInt("b_no"));
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             LayoutInflater inf= (LayoutInflater)getApplicationContext().getSystemService(getApplicationContext().LAYOUT_INFLATER_SERVICE);
             final View mv = inf.inflate(R.layout.add_exams, null);

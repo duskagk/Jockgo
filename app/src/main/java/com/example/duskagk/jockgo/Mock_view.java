@@ -21,18 +21,23 @@ public class Mock_view extends AppCompatActivity {
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<ArrayList<String>> mAnswer = new ArrayList<ArrayList<String>>();
     private ArrayList<String> mImages= new ArrayList<>();
-    private int mNo;
+    private int[] mNo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mock_view);
-        mNo = getIntent().getIntExtra("no", 0);
-        getImages();
+        mNo = getIntent().getIntArrayExtra("no");
+
+        for (int i = 0; i<mNo.length; i++){
+            getImages(mNo[i]);
+        }
+
+        initRecyclerView();
     }
-    private void getImages(){
+    private void getImages(int s_no){
         mNames.add("M이상 N이하의 소수를 모두 출력하는 프로그램을 작성하시오.");
 
-        NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem?s_no=" + 2 , null, "GET");
+        NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem?s_no=" + s_no , null, "GET");
         try {
             String result = networkTask.execute().get();
 
@@ -59,11 +64,10 @@ public class Mock_view extends AppCompatActivity {
                         tmpAnswer.add(jsonObj.get("a_choice_5").toString());
                     mAnswer.add(tmpAnswer);
 
-                    initRecyclerView();
+
                 }
-            } else {
-                onBackPressed();
             }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -115,10 +119,14 @@ public class Mock_view extends AppCompatActivity {
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView:  initrecyclerview");
 
-        LinearLayoutManager layoutManager=new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.VERTICAL,false);
-        RecyclerView recyclerView=findViewById(R.id.mock_paper);
-        recyclerView.setLayoutManager(layoutManager);
-        MockRecycle adapter=new MockRecycle(this,mNames, this.mAnswer);
-        recyclerView.setAdapter(adapter);
+        if (mAnswer.size() > 0) {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+            RecyclerView recyclerView = findViewById(R.id.mock_paper);
+            recyclerView.setLayoutManager(layoutManager);
+            MockRecycle adapter = new MockRecycle(this, mNames, this.mAnswer);
+            recyclerView.setAdapter(adapter);
+        }else{
+            onBackPressed();
+        }
     }
 }

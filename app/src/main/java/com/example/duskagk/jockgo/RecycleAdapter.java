@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,17 +47,22 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     private Context mContext;
     private ArrayList<Integer> mTag;
 
+    private int[] tag;
+
+    private ArrayList<ArrayList<Integer>> gTag;
+
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
 
 
-    public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages, ArrayList<Integer> tag) {
+
+    public RecycleAdapter(Context mContext, ArrayList<String> mNames, ArrayList<String> mImages, ArrayList mTag) {
         this.mNames = mNames;
         this.mImages = mImages;
         this.mContext = mContext;
-        this.mTag = tag;
+        this.mTag = mTag;
     }
 
     @NonNull
@@ -96,7 +102,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                         EditText q_num = (EditText) mv.findViewById(R.id.q_cnt);
 
                         expListView = (ExpandableListView) mv.findViewById(R.id.lvExp);
-                        listAdapter = new ExListAdapter(v.getContext(), listDataHeader, listDataChild);
+                        //expListView.setAddStatesFromChildren(true);
+                        listAdapter = new ExListAdapter(v.getContext(), listDataHeader, listDataChild, gTag);
                         expListView.setAdapter(listAdapter);
 
 
@@ -105,38 +112,44 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                             @Override
                             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
                                 Toast.makeText(v.getContext(),
-                                        "Group Clicked " + listDataHeader.get(groupPosition),
+                                        ((ExListAdapter)parent.getExpandableListAdapter()).getGroup(groupPosition).toString() + " : " + ((ExListAdapter)parent.getExpandableListAdapter()).getGroupCheckBox(groupPosition).isChecked(),
                                         Toast.LENGTH_SHORT).show();
                                 return false;
                             }
                         });
-                        expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-                            @Override
-                            public void onGroupExpand(int groupPosition) {
-                                Toast.makeText(mv.getContext(), listDataHeader.get(groupPosition)
-                                        + "Exapand", Toast.LENGTH_SHORT).show();
 
-                            }
-                        });
 
-                        expListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
+//                        expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
+//                            @Override
+//                            public void onGroupExpand(int groupPosition) {
+//                                Toast.makeText(mv.getContext(), listDataHeader.get(groupPosition)
+//                                        + "Exapand", Toast.LENGTH_SHORT).show();
+//
+//                            }
+//                        });
 
-                            @Override
-                            public void onGroupCollapse(int groupPosition) {
-                                Toast.makeText(mv.getContext(),
-                                        listDataHeader.get(groupPosition) + " Collapsed",
-                                        Toast.LENGTH_SHORT).show();
-
-                            }
-                        });
+//                        expListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                            @Override
+//                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                                Toast.makeText(view.getContext(), id +" : OnItemClick" + position, Toast.LENGTH_LONG);
+//                            }
+//                        });
+//
+//                        expListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
+//
+//                            @Override
+//                            public void onGroupCollapse(int groupPosition) {
+//                                Toast.makeText(mv.getContext(),
+//                                        listDataHeader.get(groupPosition) + " Collapsed",
+//                                        Toast.LENGTH_SHORT).show();
+//
+//                            }
+//                        });
                         expListView.setOnChildClickListener(new OnChildClickListener() {
                             @Override
                             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                                Toast.makeText(
-                                        v.getContext(),
-                                        listDataHeader.get(groupPosition)
-                                                + " : " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
-                                        .show();
+                                ((ExListAdapter)parent.getExpandableListAdapter()).setCheck(groupPosition, childPosition);
+                                tag = ((ExListAdapter)parent.getExpandableListAdapter()).getTag();
                                 return false;
                             }
                         });
@@ -147,9 +160,11 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                         stbtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent=new Intent(v.getContext(),Mock_view.class);
-                                intent.putExtra("no", mTag.get(position));
-                                v.getContext().startActivity(intent);
+                                if (tag != null) {
+                                    Intent intent = new Intent(v.getContext(), Mock_view.class);
+                                    intent.putExtra("no", tag);
+                                    v.getContext().startActivity(intent);
+                                }
                             }
                         });
                         mBulid.setView(mv);
@@ -196,20 +211,28 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         List<String> child = null;
         listDataHeader = new ArrayList<String>();
         listDataChild  = new HashMap<String, List<String>>();
+        gTag = new ArrayList<ArrayList<Integer>>();
         for(int i = 0; i< jsonArray.length(); i++){
             try {
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
                 if (!(jsonObj.get("s_subject").toString().equals(tmpHead))){
-                    tmpHead = jsonObj.get("s_subject").toString();
-                    listDataHeader.add(tmpHead);
-                    child = new ArrayList<String>();
                     if (index >= 0){
                         listDataChild.put(listDataHeader.get(index), child);
                     }
-                    index++;
-                }
-                child.add(jsonObj.get("s_denouement").toString());
+                    tmpHead = jsonObj.get("s_subject").toString();
+                    listDataHeader.add(tmpHead);
 
+
+                    gTag.add(new ArrayList<Integer>());
+                    gTag.get(index+1).add(jsonObj.getInt("s_no"));
+                    child = new ArrayList<String>();
+
+                    child.add(jsonObj.get("s_denouement").toString());
+                    index++;
+                }else {
+                    gTag.get(index).add(jsonObj.getInt("s_no"));
+                    child.add(jsonObj.get("s_denouement").toString());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

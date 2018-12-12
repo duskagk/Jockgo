@@ -5,5 +5,6 @@
     <color name="colorblue">#5959dd</color>
     <color name="coloraaa">#d446b9f6</color>
     <color name="colorAccent">#5959dd</color>
+    <color name="colorMock">#cf3443</color>
     <!--<color name="colorAccent">#FF4081</color>-->
 </resources>

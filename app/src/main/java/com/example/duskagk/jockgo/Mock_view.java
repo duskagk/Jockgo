@@ -1,5 +1,6 @@
 package com.example.duskagk.jockgo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +28,7 @@ public class Mock_view extends AppCompatActivity {
     private int[] mNo;
     private int b_no;
     private MockRecycle adapter;
+    private boolean end = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,26 +50,33 @@ public class Mock_view extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int size = mNames.size();
 
-                MyApplication myApp = (MyApplication)getApplication();
-                int u_no = myApp.getNo();
-                if (u_no > 0) {
-                    for (int i = 0; size > i; i++) {
-                        JSONObject values = new JSONObject();
+                if (end){
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(intent);
+                } else {
 
-                        try {
-                            values.put("u_no", u_no);
-                            values.put("p_no", adapter.getPNo(i));
-                            values.put("b_no", b_no);
-                            values.put("check", adapter.getAnswer(i) ? "Y" : "N");
+                    int size = mNames.size();
 
-                            NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/info", values, "POST");
-                            networkTask.execute();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    MyApplication myApp = (MyApplication) getApplication();
+                    int u_no = myApp.getNo();
+                    if (u_no > 0) {
+                        for (int i = 0; size > i; i++) {
+                            JSONObject values = new JSONObject();
+
+                            try {
+                                values.put("u_no", u_no);
+                                values.put("p_no", adapter.getPNo(i));
+                                values.put("b_no", b_no);
+                                values.put("check", adapter.getAnswer(i) ? "Y" : "N");
+
+                                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/info", values, "POST");
+                                networkTask.execute();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
-
                     }
                 }
 

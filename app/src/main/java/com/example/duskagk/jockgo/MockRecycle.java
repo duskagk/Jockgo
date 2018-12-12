@@ -1,5 +1,6 @@
 package com.example.duskagk.jockgo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -104,12 +105,14 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
             answer = (ViewGroup) itemView.findViewById(R.id.mock_answer);
         }
 
+        @SuppressLint("ResourceAsColor")
         public boolean checkAnswer(){
 
             boolean out = false;
             for (int i = 0; i < 5; i++){
-                if (((CheckBox)answer.getChildAt(i)).isChecked()){
-                    if (((CheckBox)answer.getChildAt(i)).getText().equals(trueAnswer)) {
+                if (((CheckBox)answer.getChildAt(i)).getText().equals(trueAnswer)){
+                    ((CheckBox) answer.getChildAt(i)).setTextColor(R.color.colorMock);
+                    if (((CheckBox)answer.getChildAt(i)).isChecked()) {
                         out = true;
                     }
                 }

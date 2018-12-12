@@ -1,5 +1,6 @@
 package com.example.duskagk.jockgo;
 
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -69,10 +70,12 @@ public class Fragstudyline extends Fragment {
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView:  initrecyclerview");
 
+        MyApplication myApp = (MyApplication)getActivity().getApplication();
+
         LinearLayoutManager layoutManager=new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
         RecyclerView recyclerView=(RecyclerView)view.findViewById(R.id.studyrcview);
         recyclerView.setLayoutManager(layoutManager);
-        StudyRecycle adapter=new StudyRecycle(getContext(),mNames,mImages, tag);
+        StudyRecycle adapter=new StudyRecycle(getContext(),mNames,mImages, tag, myApp.getNo());
         recyclerView.setAdapter(adapter);
     }
 

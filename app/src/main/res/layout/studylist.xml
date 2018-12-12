@@ -12,11 +12,12 @@
         android:layout_height="200dp"
         android:orientation="vertical"
         android:layout_toRightOf="@+id/aaaaaaa">
-        <TextView
+        <!--TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="배열"/>
+            android:text="배열"/-->
         <TextView
+            android:id="@+id/studyHit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="정답율:60%"/>

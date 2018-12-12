@@ -11,7 +11,12 @@ import android.view.View;
 
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import static android.content.ContentValues.TAG;
 
@@ -19,6 +24,8 @@ public class Fragstudyline extends Fragment {
     View view;
     private ArrayList<String> mNames= new ArrayList<>();
     private ArrayList<String> mImages= new ArrayList<>();
+    private ArrayList<Integer> tag = new ArrayList<>();
+
     public Fragstudyline(){
 
     }
@@ -32,42 +39,40 @@ public class Fragstudyline extends Fragment {
     }
     private void getImages(){
 
+        NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/book", null, "GET");
+        try {
+            String result = networkTask.execute().get();
 
-        mImages.add("http://image.yes24.com/momo/TopCate167/MidCate06/16659691.jpg");
-        mNames.add("수학");
 
-        mImages.add("https://image.aladin.co.kr/product/2782/56/cover/8998756161_1.jpg");
-        mNames.add("c언어");
 
-        mImages.add("http://www.hanbit.co.kr/data/books/B8123297462_l.jpg");
-        mNames.add("c++");
+            String url = "https://s3.ap-northeast-2.amazonaws.com/jockgo/";
+            JSONArray jsonArray = new JSONArray(result);
 
-        mImages.add("http://www.hanbit.co.kr/data/books/B3450156021_l.jpg");
-        mNames.add("알고리즘");
+            for(int i = 0; i< jsonArray.length(); i++){
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                mImages.add(url + jsonObj.get("b_image").toString() + ".jpg");
+                mNames.add(jsonObj.get("b_name").toString());
+                tag.add(Integer.parseInt(jsonObj.get("b_no").toString()));
+            }
 
-        mImages.add("http://www.hanbit.co.kr/data/books/B1779572378_l.jpg");
-        mNames.add("그래픽스");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        mImages.add("http://userbook.net/wp/wp-content/uploads/2014/04/L-210x300.jpg");
-        mNames.add("사물인터넷");
-
-        mImages.add("http://image.kyobobook.co.kr/images/book/large/717/l9788973387717.jpg");
-        mNames.add("영상처리");
-
-        mImages.add("http://www.hanbit.co.kr/data/books/B4606522972_l.jpg");
-        mNames.add("기계학습");
-
-        mNames.add("http://bimage.interpark.com/goods_image/5/5/1/9/264105519g.jpg");
-        mNames.add("웹프로그래밍");
         initRecyclerView();
     }
+
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView:  initrecyclerview");
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
         RecyclerView recyclerView=(RecyclerView)view.findViewById(R.id.studyrcview);
         recyclerView.setLayoutManager(layoutManager);
-        StudyRecycle adapter=new StudyRecycle(getContext(),mNames,mImages);
+        StudyRecycle adapter=new StudyRecycle(getContext(),mNames,mImages, tag);
         recyclerView.setAdapter(adapter);
     }
 

@@ -19,11 +19,13 @@ public class StudyRecycle extends RecyclerView.Adapter<StudyRecycle.ViewHolder> 
     private ArrayList<String> mNames= new ArrayList<>();
     private ArrayList<String> mImages= new ArrayList<>();
     private Context mContext;
+    private ArrayList<Integer> b_no;
 
-    public StudyRecycle(Context mContext,ArrayList<String> mNames, ArrayList<String> mImages) {
+    public StudyRecycle(Context mContext,ArrayList<String> mNames, ArrayList<String> mImages, ArrayList<Integer> mTag) {
         this.mNames = mNames;
         this.mImages = mImages;
         this.mContext = mContext;
+        this.b_no = mTag;
     }
 
     @NonNull
@@ -47,6 +49,8 @@ public class StudyRecycle extends RecyclerView.Adapter<StudyRecycle.ViewHolder> 
         });
     }
 
+
+
     @Override
     public int getItemCount() {
         return mImages.size();
@@ -55,11 +59,14 @@ public class StudyRecycle extends RecyclerView.Adapter<StudyRecycle.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView img;
         TextView record;
+        TextView hit;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
             img=itemView.findViewById(R.id.studyimg );
             record=itemView.findViewById(R.id.studysub);
+            hit=itemView.findViewById(R.id.studyHit);
         }
     }
 }

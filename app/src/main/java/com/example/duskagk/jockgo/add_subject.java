@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class add_subject extends AppCompatActivity {
     final int REQ_CODE_SELECT_IMAGE=100;
@@ -61,28 +63,35 @@ public class add_subject extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                EditText book = (EditText)findViewById(R.id.subjectBookName);
+                new Thread(){
+                    public void run(){
+                        imageUpload(UploadImgPath, "jockgo");
 
-                JSONObject values = new JSONObject();
-                if (isImage)
+                        EditText book = (EditText)findViewById(R.id.subjectBookName);
 
-
-                try {
-                    imageUpload(UploadImgPath, "jockgo");
-                    values.put("b_name", book.getText().toString());
-                    if (isImage && returnValue != null){
-                        JSONObject returnJson = new JSONArray(returnValue).getJSONObject(0).getJSONObject("data");
+                        JSONObject values = new JSONObject();
+                        if (isImage)
 
 
-                        String MD5 = returnJson.getString("key").split(".")[0];
-                        values.put("p_image", MD5);
+                            try {
+
+                                values.put("b_name", book.getText().toString());
+                                if (isImage && returnValue != null){
+                                    JSONObject returnJson = new JSONArray(returnValue).getJSONObject(0).getJSONObject("data");
+
+
+                                    String MD5 = getMD5(book.getText().toString());
+                                    values.put("b_image", MD5);
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/book", values, "POST");
+                        networkTask.execute();
                     }
+                }.start();
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/book", values, "POST");
-                networkTask.execute();
             }
         };
     }
@@ -141,6 +150,8 @@ public class add_subject extends AppCompatActivity {
         String twoHyphens = "--";
         String boundary = "--*****";
 
+        EditText book = (EditText)findViewById(R.id.subjectBookName);
+
         try {
             FileInputStream mFileInputStream = new FileInputStream(filename);
 
@@ -161,7 +172,7 @@ public class add_subject extends AppCompatActivity {
             dos.writeBytes(twoHyphens + boundary + lineEnd);
             //dos.writeBytes("Content-Disposition: form-data; name=\"stidx\"\r\n\r\n" + stidx + lineEnd);
             //dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + filename + "\"" + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + getMD5(book.getText().toString()) + ".jpg" + "\"" + lineEnd);
             //dos.writeBytes("Content-Type: application/octet-stream\r\n\r\n");
             dos.writeBytes("Content-Type: image/jpeg\r\n\r\n");
 
@@ -208,5 +219,23 @@ public class add_subject extends AppCompatActivity {
             Log.d("Test", "exception " + e.getMessage());
             // TODO: handle exception
         }
+    }
+
+    public String getMD5(String str){
+        String MD5 = "";
+        try{
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(str.getBytes());
+            byte byteData[] = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for(int i = 0 ; i < byteData.length ; i++){
+                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
+            }
+            MD5 = sb.toString();
+        }catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+            MD5 = null;
+        }
+        return MD5;
     }
 }

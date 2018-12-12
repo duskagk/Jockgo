@@ -58,9 +58,10 @@ public class Fraghome extends Fragment {
 
 
         MyApplication myApp = (MyApplication)getActivity().getApplication();
-        TextView textView = (TextView)view.findViewById(R.id.test);
-        textView.setText(myApp.getName());
-        if(myApp.isLogin()){  view.findViewById(R.id.login).setVisibility(View.INVISIBLE); }
+
+        if(myApp.isLogin()){  view.findViewById(R.id.login).setVisibility(View.INVISIBLE);
+            TextView textView = (TextView)view.findViewById(R.id.test);
+            textView.setText(myApp.getName());}
         return view;
     }
 
@@ -74,14 +75,16 @@ public class Fraghome extends Fragment {
 
             String url = "https://s3.ap-northeast-2.amazonaws.com/jockgo/";
             JSONArray jsonArray = new JSONArray(result);
-
-            for(int i = 0; i< jsonArray.length(); i++){
+            int i = 0;
+            for(i=0; i< jsonArray.length(); i++){
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
                 mImages.add(url + jsonObj.get("b_image").toString() + ".jpg");
                 mNames.add(jsonObj.get("b_name").toString());
                 tag.add(Integer.parseInt(jsonObj.get("b_no").toString()));
             }
-
+            mImages.add("https://image.freepik.com/free-icon/book-with-add-button_318-46050.jpg");
+            mNames.add("과목추가");
+            tag.add(i);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -90,6 +93,33 @@ public class Fraghome extends Fragment {
             e.printStackTrace();
         }
 
+
+//        mImages.add("http://image.yes24.com/momo/TopCate167/MidCate06/16659691.jpg");
+//        mNames.add("수학");
+////
+//        mImages.add("https://image.aladin.co.kr/product/2782/56/cover/8998756161_1.jpg");
+//        mNames.add("c언어");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B8123297462_l.jpg");
+//        mNames.add("c++");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B3450156021_l.jpg");
+//        mNames.add("알고리즘");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B1779572378_l.jpg");
+//        mNames.add("그래픽스");
+//
+//        mImages.add("http://userbook.net/wp/wp-content/uploads/2014/04/L-210x300.jpg");
+//        mNames.add("사물인터넷");
+//
+//        mImages.add("http://image.kyobobook.co.kr/images/book/large/717/l9788973387717.jpg");
+//        mNames.add("영상처리");
+//
+//        mImages.add("http://www.hanbit.co.kr/data/books/B4606522972_l.jpg");
+//        mNames.add("기계학습");
+//
+//        mNames.add("http://bimage.interpark.com/goods_image/5/5/1/9/264105519g.jpg");
+//        mNames.add("웹프로그래밍");
         initRecyclerView();
     }
 

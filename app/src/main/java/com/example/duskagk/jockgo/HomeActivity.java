@@ -139,15 +139,19 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void prepareMenuData() {
+        MyApplication myApp = (MyApplication)getApplication();
+
 
         headerList = new ArrayList<String>();
         childList = new HashMap<String, List<String>>();
-//        mChildListContent = new ArrayList<string>();
-
 
         headerList.add("정보변경");
-//        childList.put(headerList(0),null);
-
+        List<String> 정보변경=new ArrayList<>();
+        if (myApp.isLogin()==false){
+            정보변경.add("로그인");
+        }else{
+            정보변경.add("로그아웃");
+        }
 
         headerList.add("등록");
 
@@ -158,6 +162,7 @@ public class HomeActivity extends AppCompatActivity
 
 
         childList.put(headerList.get(1),등록);
+        childList.put(headerList.get(0),정보변경);
 
     }
 
@@ -180,11 +185,11 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 
-                Toast.makeText(
-                        v.getContext(),
-                        headerList.get(groupPosition)
-                                + " : " + childList.get(headerList.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(
+//                        v.getContext(),
+//                        headerList.get(groupPosition)
+//                                + " : " + childList.get(headerList.get(groupPosition)).get(childPosition), Toast.LENGTH_SHORT)
+//                        .show();
 
                 Navigation(childList.get(headerList.get(groupPosition)).get(childPosition));
 
@@ -194,7 +199,10 @@ public class HomeActivity extends AppCompatActivity
     }
 
 public void Navigation(String nav){
-        if(nav=="문제등록"){
+    MyApplication myApp = (MyApplication)getApplication();
+    SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
+
+    if(nav=="문제등록"){
             AlertDialog.Builder mBulid = new AlertDialog.Builder(HomeActivity.this);
 
             NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/book", null, "GET");
@@ -238,7 +246,16 @@ public void Navigation(String nav){
         }else if(nav=="과목등록"){
             Intent intent=new Intent(HomeActivity.this,add_subject.class);
             startActivity(intent);
-
+        }
+        else if(nav=="로그아웃"){
+        myApp.setLogin(false);
+        SharedPreferences.Editor editor=pref.edit();
+        editor.clear();
+        editor.commit();
+    }
+        else if(nav=="로그인"){
+            Intent intent=new Intent(HomeActivity.this,LoginActivity.class);
+            startActivity(intent);
         }
 }
 

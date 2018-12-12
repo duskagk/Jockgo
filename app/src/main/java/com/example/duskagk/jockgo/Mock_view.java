@@ -60,9 +60,9 @@ public class Mock_view extends AppCompatActivity {
                             values.put("u_no", u_no);
                             values.put("p_no", adapter.getPNo(i));
                             values.put("b_no", b_no);
-                            values.put("check", adapter.getAnswer(i));
+                            values.put("check", adapter.getAnswer(i) ? "Y" : "N");
 
-                            NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/info", null, "POST");
+                            NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/info", values, "POST");
                             networkTask.execute();
                         } catch (JSONException e) {
                             e.printStackTrace();

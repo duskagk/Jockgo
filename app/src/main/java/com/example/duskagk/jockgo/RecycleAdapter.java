@@ -163,7 +163,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                                 if (tag != null) {
                                     Intent intent = new Intent(v.getContext(), Mock_view.class);
                                     intent.putExtra("no", tag);
-                                    intent.putExtra("b_no", bNo);
+                                    intent.putExtra("b_no", bNo.get(position));
                                     v.getContext().startActivity(intent);
                                 }
                             }

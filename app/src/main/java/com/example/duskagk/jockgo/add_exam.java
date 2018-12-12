@@ -70,21 +70,14 @@ public class add_exam extends AppCompatActivity {
     LinearLayout layout=null;
     LinearLayout laybox=null;
 
+    String returnValue = null;
     String UploadImgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectDiskReads()
-                .detectDiskWrites()
-                .detectNetwork()
-                .penaltyLog().build());
-        verifyStoragePermissions(this);
-
         setContentView(R.layout.activity_add_exam);
-        String str;
         TextView subname=(TextView)findViewById(R.id.add_sub_name);
 
         Intent intent = getIntent();
@@ -121,12 +114,14 @@ public class add_exam extends AppCompatActivity {
             public void onClick(View v) {
                 if(odid<4){
                 TextView edt=new TextView(add_exam.this);
+
                 edt.setText("오답");
                 String strColor = "#ff0000";
                 edt.setTextColor(Color.parseColor(strColor));
                 layout=(LinearLayout)findViewById(R.id.answers);
 //                laybox=(LinearLayout)findViewById(R.id.asdfxcv);
                 EditText odap=new EditText(add_exam.this);
+                wAnswer.add(odap);
                 odap.setId(odid);
                 odap.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -188,19 +183,25 @@ public class add_exam extends AppCompatActivity {
                 EditText answerContent = (EditText)findViewById(R.id.examAnswer);
 
                 JSONObject values = new JSONObject();
+                if (isImage)
+                    imageUpload(UploadImgPath, "jockgo");
 
                 try {
                     values.put("s_no", s_no);
                     values.put("u_no", u_no);
                     values.put("p_problem", problemContent.getText().toString());
                     for (int i = 1; i <= wAnswer.size(); i++){
-                        values.put("a_choice_" + i, wAnswer.get(i-1).getText().toString());
+                        values.put("a_choice_" + (i), wAnswer.get(i-1).getText().toString());
                     }
                     values.put("a_choice_" + (odid+1), answerContent.getText().toString());
                     values.put("a_answer", answerContent.getText().toString());
-                    if (isImage){
+                    if (isImage && returnValue != null){
                         long now = System.currentTimeMillis();
-                        String MD5 = getMD5(String.valueOf(now));
+
+                        JSONObject returnJson = new JSONArray(returnValue).getJSONObject(0).getJSONObject("data");
+
+
+                        String MD5 = returnJson.getString("key").split("/")[0];
                         values.put("p_image", MD5);
                     }
 
@@ -210,7 +211,6 @@ public class add_exam extends AppCompatActivity {
 
 
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem", values, "POST");
-                imageUpload(UploadImgPath, "jockgo");
                 networkTask.execute();
             }
         };
@@ -359,42 +359,6 @@ public class add_exam extends AppCompatActivity {
         };
     }
 
-    public String getMD5(String str){
-
-        String MD5 = "";
-
-        try{
-
-            MessageDigest md = MessageDigest.getInstance("MD5");
-
-            md.update(str.getBytes());
-
-            byte byteData[] = md.digest();
-
-            StringBuffer sb = new StringBuffer();
-
-            for(int i = 0 ; i < byteData.length ; i++){
-
-                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
-
-            }
-
-            MD5 = sb.toString();
-
-
-
-        }catch(NoSuchAlgorithmException e){
-
-            e.printStackTrace();
-
-            MD5 = null;
-
-        }
-
-        return MD5;
-
-    }
-
     public String[] getImageNameToUri(Uri data)
     {
         String[] proj = { MediaStore.Images.Media.DATA };
@@ -412,39 +376,14 @@ public class add_exam extends AppCompatActivity {
         return str;
     }
 
-    public void saveBitmaptoJpeg(Bitmap bitmap, String folder, String name){
-        String ex_storage = Environment.getExternalStorageDirectory().getAbsolutePath();
-        // Get Absolute Path in External Sdcard
-        String foler_name = "/"+folder+"/";
-        String file_name = name+".jpg";
-        String string_path = ex_storage+foler_name;
-        UploadImgPath = string_path+file_name;
 
-
-        File file_path;
-        try{
-            file_path = new File(string_path);
-            if(!file_path.isDirectory()){
-                file_path.mkdirs();
-            }
-            FileOutputStream out = new FileOutputStream(string_path+file_name);
-
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.close();
-
-        }catch(FileNotFoundException exception){
-            Log.e("FileNotFoundException", exception.getMessage());
-        }catch(IOException exception){
-            Log.e("IOException", exception.getMessage());
-        }
-    }
 
     public void imageUpload(final String filename, String stidx) {
         String urlString = "https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/upload";
 
         String lineEnd = "\r\n";
         String twoHyphens = "--";
-        String boundary = "*****";
+        String boundary = "--*****";
 
         try {
             FileInputStream mFileInputStream = new FileInputStream(filename);
@@ -459,15 +398,16 @@ public class add_exam extends AppCompatActivity {
             con.setUseCaches(false);
             con.setRequestMethod("POST");
             con.setRequestProperty("Connection", "Keep-Alive");
-            con.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+            con.setRequestProperty("content-type", "multipart/form-data; boundary=" + boundary);
 
             // write data
             DataOutputStream dos = new DataOutputStream(con.getOutputStream());
             dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"stidx\"\r\n\r\n" + stidx + lineEnd);
-            dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + filename + "\"" + lineEnd);
-            dos.writeBytes("Content-Type: application/octet-stream\r\n\r\n");
+            //dos.writeBytes("Content-Disposition: form-data; name=\"stidx\"\r\n\r\n" + stidx + lineEnd);
+            //dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + filename + "\"" + lineEnd);
+            //dos.writeBytes("Content-Type: application/octet-stream\r\n\r\n");
+            dos.writeBytes("Content-Type: image/jpeg\r\n\r\n");
 
             int bytesAvailable = mFileInputStream.available();
             int maxBufferSize = 1024;
@@ -505,6 +445,8 @@ public class add_exam extends AppCompatActivity {
             Log.e("Test", "result = " + s);
             dos.close();
 
+            returnValue = b.toString();
+
 
         } catch (Exception e) {
             Log.d("Test", "exception " + e.getMessage());
@@ -512,20 +454,7 @@ public class add_exam extends AppCompatActivity {
         }
     }
 
-    public static void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    new String[]{"PERMISSIONS_STORAGE",
-                            "REQUEST_EXTERNAL_STORAGE"},
-                    1
-            );
-        }
-    }
 
 
 

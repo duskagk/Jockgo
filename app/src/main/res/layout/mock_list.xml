@@ -34,19 +34,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="20dp"
+            android:visibility="invisible"
+            android:text="5555"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:visibility="invisible"
             android:text="문제의 정답"/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:text="오답"/>
         <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-            android:layout_marginVertical="20dp"
+        android:layout_marginVertical="20dp"
+        android:visibility="invisible"
         android:text="ㄴㅇㄹㄴㅇㄹㄴㅇ"/>
         <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:text="ㄴㅇ러ㅏㅣㅌㅊㅍ"/>
     </LinearLayout>
         </RelativeLayout>

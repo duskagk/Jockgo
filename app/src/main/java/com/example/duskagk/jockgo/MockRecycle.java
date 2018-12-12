@@ -27,22 +27,34 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
     private ArrayList<String> mNames; //= new ArrayList<>();
     private ArrayList<String> mImages; // = new ArrayList<>();
     private ArrayList<ArrayList<String>> mAnswer; // = new ArrayList<ArrayList<String>>();
-    private Context mContext;
+    private ArrayList<ViewHolder> VH = new ArrayList<ViewHolder>();
+    private ArrayList<Integer> p_no;
 
-    public MockRecycle( Context mContext,ArrayList<String> mNames, ArrayList<ArrayList<String>> mAnswer) {
+    public MockRecycle( ArrayList<String> mNames, ArrayList<ArrayList<String>> mAnswer, ArrayList<Integer> p_no) {
         this.mNames = mNames;
         this.mImages = mImages;
-        this.mContext = mContext;
         this.mAnswer = mAnswer;
-
+        this.p_no = p_no;
     }
+
+
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: called.");
         View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.mock_list,parent,false);
-        return new ViewHolder(view);
+        ViewHolder VH = new ViewHolder(view);
+        this.VH.add(VH);
+        return VH;
+    }
+
+    public int getPNo (int position){
+        return VH.get(position).p_no;
+    }
+
+    public boolean getAnswer (int position){
+        return VH.get(position).checkAnswer();
     }
 
     @Override
@@ -52,10 +64,15 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
 //                .into(holder.image);
 
         holder.name.setText(mNames.get(position));
+        holder.p_no = p_no.get(position);
+        holder.trueAnswer = mAnswer.get(position).get(0);
 
-        for (int i=1; mAnswer.size() > i; i++){
-            CheckBox checkBox = new CheckBox(mContext);
-            checkBox.setText(mAnswer.get(i).toString());
+
+
+        for (int i=1; mAnswer.get(position).size() > i; i++){
+            CheckBox checkBox = (CheckBox) holder.answer.getChildAt(i);
+            checkBox.setVisibility(View.VISIBLE);
+            checkBox.setText(mAnswer.get(position).get(i).toString());
         }
 
 
@@ -76,13 +93,28 @@ public class MockRecycle extends RecyclerView.Adapter<MockRecycle.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder{
 //        ImageView image;
         TextView name;
-        LinearLayout answer;
+        ViewGroup answer;
+        int p_no;
+        String trueAnswer = null;
         public ViewHolder(View itemView) {
             super(itemView);
 
 //            image=itemView.findViewById(R.id.mock_img);
             name=itemView.findViewById(R.id.mock_q);
-            answer = itemView.findViewById(R.id.mock_answer);
+            answer = (ViewGroup) itemView.findViewById(R.id.mock_answer);
+        }
+
+        public boolean checkAnswer(){
+
+            boolean out = false;
+            for (int i = 0; i < 5; i++){
+                if (((CheckBox)answer.getChildAt(i)).isChecked()){
+                    if (((CheckBox)answer.getChildAt(i)).getText().equals(trueAnswer)) {
+                        out = true;
+                    }
+                }
+            }
+            return out;
         }
     }
 }

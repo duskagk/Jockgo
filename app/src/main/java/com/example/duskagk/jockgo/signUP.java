@@ -1,6 +1,7 @@
 package com.example.duskagk.jockgo;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -97,6 +98,11 @@ public class signUP extends AppCompatActivity {
 
                 NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/register", values, "POST");
                 networkTask.execute();
+
+                SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
+                SharedPreferences.Editor editor= pref.edit();
+                editor.clear();
+                editor.commit();
 
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);

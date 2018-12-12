@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -21,22 +23,60 @@ public class Mock_view extends AppCompatActivity {
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<ArrayList<String>> mAnswer = new ArrayList<ArrayList<String>>();
     private ArrayList<String> mImages= new ArrayList<>();
+    private ArrayList<Integer> p_no = new ArrayList<>();
     private int[] mNo;
+    private int b_no;
+    private MockRecycle adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mock_view);
         mNo = getIntent().getIntArrayExtra("no");
-
+        b_no = getIntent().getIntExtra("b_no", 0);
         for (int i = 0; i<mNo.length; i++){
             getImages(mNo[i]);
         }
 
+        Button btnPush = (Button)findViewById(R.id.mockPush);
+        btnPush.setOnClickListener(clickPush());
+
         initRecyclerView();
     }
-    private void getImages(int s_no){
-        mNames.add("M이상 N이하의 소수를 모두 출력하는 프로그램을 작성하시오.");
 
+    private View.OnClickListener clickPush(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int size = mNames.size();
+
+                MyApplication myApp = (MyApplication)getApplication();
+                int u_no = myApp.getNo();
+                if (u_no > 0) {
+                    for (int i = 0; size > i; i++) {
+                        JSONObject values = new JSONObject();
+
+                        try {
+                            values.put("u_no", u_no);
+                            values.put("p_no", adapter.getPNo(i));
+                            values.put("b_no", b_no);
+                            values.put("check", adapter.getAnswer(i));
+
+                            NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/info", null, "POST");
+                            networkTask.execute();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+
+
+            }
+        };
+    }
+
+    private void getImages(int s_no){
         NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/problem?s_no=" + s_no , null, "GET");
         try {
             String result = networkTask.execute().get();
@@ -48,6 +88,7 @@ public class Mock_view extends AppCompatActivity {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObj = jsonArray.getJSONObject(i);
                     mNames.add(jsonObj.get("p_problem").toString());
+                    p_no.add(jsonObj.getInt("p_no"));
 
                     ArrayList<String> tmpAnswer = new ArrayList<String>();
                     if (jsonObj.get("a_answer").toString().length() > 0)
@@ -76,45 +117,6 @@ public class Mock_view extends AppCompatActivity {
             e.printStackTrace();
         }
 
-//        mNames.add("M이상 N이하의 소수를 모두 출력하는 프로그램을 작성하시오.");
-//
-//        mNames.add("정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.\n" +
-//                "\n" +
-//                "X가 3으로 나누어 떨어지면, 3으로 나눈다.\n" +
-//                "X가 2로 나누어 떨어지면, 2로 나눈다.\n" +
-//                "1을 뺀다.\n" +
-//                "정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.");
-//
-//        mNames.add("정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.\n" +
-//                "\n" +
-//                "X가 3으로 나누어 떨어지면, 3으로 나눈다.\n" +
-//                "X가 2로 나누어 떨어지면, 2로 나눈다.\n" +
-//                "1을 뺀다.\n" +
-//                "정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.");
-//
-//        mNames.add("정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.\\n\" +\n" +
-//                "                \"\\n\" +\n" +
-//                "                \"X가 3으로 나누어 떨어지면, 3으로 나눈다.\\n\" +\n" +
-//                "                \"X가 2로 나누어 떨어지면, 2로 나눈다.\\n\" +\n" +
-//                "                \"1을 뺀다.\\n\" +\n" +
-//                "                \"정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.");
-//
-//        mNames.add("정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.\\n\" +\n" +
-//                "                \"\\n\" +\n" +
-//                "                \"X가 3으로 나누어 떨어지면, 3으로 나눈다.\\n\" +\n" +
-//                "                \"X가 2로 나누어 떨어지면, 2로 나눈다.\\n\" +\n" +
-//                "                \"1을 뺀다.\\n\" +\n" +
-//                "                \"정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.");
-//
-//        mNames.add("정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.\\n\" +\n" +
-//                "                \"\\n\" +\n" +
-//                "                \"X가 3으로 나누어 떨어지면, 3으로 나눈다.\\n\" +\n" +
-//                "                \"X가 2로 나누어 떨어지면, 2로 나눈다.\\n\" +\n" +
-//                "                \"1을 뺀다.\\n\" +\n" +
-//                "                \"정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.");
-
-
-
     }
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView:  initrecyclerview");
@@ -123,7 +125,7 @@ public class Mock_view extends AppCompatActivity {
             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
             RecyclerView recyclerView = findViewById(R.id.mock_paper);
             recyclerView.setLayoutManager(layoutManager);
-            MockRecycle adapter = new MockRecycle(this, mNames, this.mAnswer);
+            adapter = new MockRecycle( mNames, this.mAnswer, p_no);
             recyclerView.setAdapter(adapter);
         }else{
             onBackPressed();

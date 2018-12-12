@@ -7,6 +7,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/lbitemcheck"
         android:layout_marginLeft="30dp"
+        android:clickable="false"
         android:focusable="false"/>
     <TextView
         android:id="@+id/lblListItem"

@@ -45,7 +45,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     private ArrayList<String> mNames= new ArrayList<>();
     private ArrayList<String> mImages= new ArrayList<>();
     private Context mContext;
-    private ArrayList<Integer> mTag;
+    private ArrayList<Integer> bNo;
 
     private int[] tag;
 
@@ -62,7 +62,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
         this.mNames = mNames;
         this.mImages = mImages;
         this.mContext = mContext;
-        this.mTag = mTag;
+        this.bNo = mTag;
     }
 
     @NonNull
@@ -81,14 +81,14 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                 .into(holder.image);
 
 
-        holder.name.setTag(mTag.get(position));
+        holder.name.setTag(bNo.get(position));
         holder.name.setText(mNames.get(position));
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked an image:" + mNames.get(position));
 
-                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/subject?b_no=" + mTag.get(position), null, "GET");
+                NetworkTask networkTask = new NetworkTask("https://che5uuetmi.execute-api.ap-northeast-2.amazonaws.com/test/subject?b_no=" + bNo.get(position), null, "GET");
                 try {
                     String result = networkTask.execute().get();
 
@@ -163,6 +163,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
                                 if (tag != null) {
                                     Intent intent = new Intent(v.getContext(), Mock_view.class);
                                     intent.putExtra("no", tag);
+                                    intent.putExtra("b_no", bNo);
                                     v.getContext().startActivity(intent);
                                 }
                             }
